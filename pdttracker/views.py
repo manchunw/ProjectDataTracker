@@ -16,23 +16,6 @@ def home(request):
 @csrf_protect
 def auth_login(request):
 
-    # if request.method == 'POST':
-    #     username = request.POST['username']
-    #     password = request.POST['password']
-
-    #     user = authenticate(username=username, password=password)
-
-    #     if user:
-    #         if user.is_active:
-    #             login(request, user)
-    #             return HttpResponseRedirect("/now/")
-    #         else:
-    #             return HttpResponse("Your PDT account is disabled.")
-    #     else:
-    #         return render_to_response("login.html", {"error_message": "Invalid username and/or password."}, RequestContext(request))
-    # else:
-    #     return render(request, "login.html", {})
-
     if request.method == 'POST':
         form = LoginForm(request.POST)
         
@@ -63,5 +46,5 @@ def auth_logout(request):
 @login_required
 def currentTime(request):
     s = datetime.datetime.now()
-    return HttpResponse(s)
+    return render(request, 'view.html', {"time": str(s)})
 

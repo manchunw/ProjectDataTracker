@@ -15,4 +15,4 @@ table.catalog-table{border-collapse:separate; border-spacing:0 10px;}
 table.catalog-table>tbody>tr>td{padding:10px;border-color:transparent;}
 header{height:100px; padding:10px 0;}
 ul.nav.navbar-nav{padding:15px 0;}
-.help-block{cursor:pointer;}
+.help-link{cursor:pointer;}

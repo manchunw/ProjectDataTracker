@@ -19,7 +19,7 @@
 {% csrf_token %}
 
 {% for field in form %}
-    <div class="form-group">
+    <div class="form-group{% if field.errors %} has-error{% endif %}">
     <div class="row">
       <div class="col-md-4" style="text-align:right">
         <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -29,22 +29,18 @@
       </div>
       <div class="col-md-4">
         {{ field }}
+        <span class="help-block">{{ field.errors }}</span>
       </div>
-      <div class="col-md-4"><span class="help-block">help</span></div>
-    </div>
-    <div class="row">
-      <div class="col-md-12">
-        {{ field.errors }}
-      </div>
+      <div class="col-md-4"><span class="help-link">help</span></div>
     </div>
         
     </div>
 {% endfor %}
 <!-- Button -->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="loginButton"></label>
+  <div class="col-md-4">&nbsp;</div>
   <div class="col-md-4">
-    <input type="submit" value="submit" class="btn btn-primary" />
+    <input type="submit" value="{{ title }}" class="btn btn-primary" />
   </div>
 </div>
 
