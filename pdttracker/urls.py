@@ -21,5 +21,6 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     # following is tested by Kelvin
     url(r'^$', 'pdttracker.views.home'),
+    url(r'^login/', 'pdttracker.views.login'),
     url(r'^now/', 'pdttracker.views.currentTime')
 ]

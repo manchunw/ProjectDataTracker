@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Project(models.Model):
 	"""Object of each project"""
@@ -7,7 +8,7 @@ class Project(models.Model):
 	current_iteration = models.ForeignKey('Iteration', blank=True, null=True)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
-	in_charge_by = models.ForeignKey('User',blank=False,null=False)
+	in_charge_by = models.ForeignKey(User,blank=False,null=False)
 	def __str__(self):
 		return self.title
 
@@ -35,7 +36,7 @@ class Phase(models.Model):
 
 class ActionLog(models.Model):
 	"""Action log for each user"""
-	user_id = models.ForeignKey('User', blank=False, null=False)
+	user_id = models.ForeignKey(User, blank=False, null=False)
 	action_type_id = models.ForeignKey('ActionDescription', blank=False, null=False)
 	project_id = models.ForeignKey('Project', blank=True, null=True)
 	defect_id = models.ForeignKey('Defect', blank=True, null=True)
@@ -53,18 +54,16 @@ class ActionDescription(models.Model):
 class ProjectMember(models.Model):
 	"""Members participating in the project"""
 	project_id = models.ForeignKey('Project', blank=False, null=False)
-	member_id = models.ForeignKey('User', blank=False, null=False)
+	member_id = models.ForeignKey(User, blank=False, null=False)
 
 class Defect(models.Model):
 	"""Defect item"""
 	def __str__(self):
 		return self.name
 
-class User(models.Model):
-	"""Users"""
-	email = models.CharField(u'Email', max_length=50)
-	password = models.CharField(u'Password', max_length=50)
-	name = models.CharField(u'Name', max_length=50)
+class UserInfo(models.Model):
+	"""User information"""
+	user_id = models.ForeignKey(User, blank=False, null=False)
 	user_type_id = models.ForeignKey('UserType', max_length=50)
 	created_at = models.DateTimeField(auto_now_add=True)
 	is_active = models.BooleanField(default=True)

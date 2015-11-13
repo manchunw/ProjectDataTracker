@@ -102,3 +102,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    ("css", "/home/softeng/pdttracker/pdttracker/templates/css"),
+    ("fonts", "/home/softeng/pdttracker/pdttracker/templates/fonts"),
+    ("img", "/home/softeng/pdttracker/pdttracker/templates/img"),
+    ("js", "/home/softeng/pdttracker/pdttracker/templates/js"),
+)
+
+# Login
+
+LOGIN_REDIRECT_URL = '/'
+
+LOGIN_URL = '/login/'
+
+LOGOUT_URL = '/logout/'
