@@ -57,7 +57,7 @@ ROOT_URLCONF = 'pdttracker.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['/home/softeng/pdttracker/pdttracker/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

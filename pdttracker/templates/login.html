@@ -1,25 +1,26 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form class="form-horizontal">
+<form class="form-horizontal" method="POST">
 <fieldset>
 
 <!-- Form Name -->
 <legend>Login</legend>
 
+{% if error_message %}
 <div class="panel panel-danger">
   <div class="panel-body">
-    {% if error_message %}
 		<p class="errornote">{{ error_message }}</p>
-	{% endif %}
   </div>
 </div>
+{% endif %}
 
 <!-- Text input-->
 <div class="form-group">
+{% csrf_token %}
   <label class="col-md-4 control-label" for="login">Login Email</label>  
   <div class="col-md-4">
-  <input id="login" name="login" type="text" placeholder="Enter email address" class="form-control input-md">
+  <input id="login" name="username" type="text" placeholder="Enter email address" class="form-control input-md">
   <span class="help-block">help</span>  
   </div>
 </div>
