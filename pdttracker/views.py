@@ -6,6 +6,7 @@ from django.shortcuts import render, render_to_response
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.template import RequestContext
+from .forms import LoginForm
 import datetime
 
 def home(request):
@@ -15,28 +16,49 @@ def home(request):
 @csrf_protect
 def auth_login(request):
 
+    # if request.method == 'POST':
+    #     username = request.POST['username']
+    #     password = request.POST['password']
+
+    #     user = authenticate(username=username, password=password)
+
+    #     if user:
+    #         if user.is_active:
+    #             login(request, user)
+    #             return HttpResponseRedirect("/now/")
+    #         else:
+    #             return HttpResponse("Your PDT account is disabled.")
+    #     else:
+    #         return render_to_response("login.html", {"error_message": "Invalid username and/or password."}, RequestContext(request))
+    # else:
+    #     return render(request, "login.html", {})
+
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-
-        user = authenticate(username=username, password=password)
-
-        if user:
-            if user.is_active:
-                login(request, user)
-                return HttpResponseRedirect("/now/")
+        form = LoginForm(request.POST)
+        
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(username=username, password=password)
+            if user:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect("/now/")
+                else:
+                    return HttpResponse("Your PDT account is disabled.")
             else:
-                return HttpResponse("Your PDT account is disabled.")
+                return render_to_response("login.html", {"title": "Login", "error_message": "Invalid username and/or password.", "form": form}, RequestContext(request))
         else:
-            print ("Invalid login details: "+ username + ", "+ password)
-            return render_to_response("login.html", {"error_message": "Invalid username and/or password."}, RequestContext(request))
+            return render_to_response("login.html", {"title": "Login", "error_message": "Server transmission error. Try again.", "form": form}, RequestContext(request))
     else:
-        return render(request, "login.html", {})
+        form = LoginForm()
+
+        return render(request, 'login.html', {"title": "Login", "form": form})
 
 @login_required
 def auth_logout(request):
-	logout(request)
-	return HttpResponseRedirect("/login/")
+    logout(request)
+    return HttpResponseRedirect("/login/")
 
 @login_required
 def currentTime(request):
