@@ -31,20 +31,24 @@
           <img src="/static/img/sample-small.png" width="50" height="50" alt="">
       </a>
     </div>
-    <nav class="collapse navbar-collapse" role="navigation">
-      <ul class="nav navbar-nav">
-        <li>
-          <a href="#">Get Started</a>
+    <nav class="collapse navbar-collapse" style="background-color:rgb(102, 234, 234);border:transparent;">
+      <p class="navbar-text">Welcome to Project Data Tracker, {% if user.is_authenticated %}{{ user.first_name }} {{ user.last_name }}!{% else %}.{% endif %}</p>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Objects<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="/view/user/">User</a></li>
+            <li><a href="/view/userinfo/">User Info</a></li>
+            <li><a href="/view/defect/">Defect</a></li>
+            <li><a href="/view/project/">Project</a></li>
+            <li><a href="/view/iteration/">Iteration</a></li>
+            <li><a href="/view/phase/">Phase</a></li>
+            <li><a href="/view/action_log/">Action Log</a></li>
+          </ul>
         </li>
-        <li>
-          <a href="#">Edit</a>
-        </li>
-        <li>
-          <a href="#">Visualize</a>
-        </li>
-        <li>
-          <a href="#">Prototype</a>
-        </li>
+        <li><a href="/admin/" class="help-icon">Admin</i></a></li>
+        <li><a href="#" class="help-icon"><i class="fa fa-question"></i></a></li>
+        <li>{% if user.is_authenticated %}<a href="/logout/">Logout</a>{% else %}<a href="/login/">Login</a>{% endif %}</li>
       </ul>
     </nav>
   </div>
@@ -54,72 +58,6 @@
   <div class="row">
         <div class="col-md-12">
           <div role="tabpanel" class="tab-pane active" id="home">
-            <!-- <h2 id="sec0">Content</h2>
-                At Bootply we like to build simple Bootstrap templates that utilize the code Bootstap CSS without a lot of customization. Sure you can 
-                find a lot of Bootstrap themes and inspiration, but these templates tend to be heavy on customization.
-                
-            
-           
-                <hr class="col-md-12">
-                Rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae 
-                dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia cor magni dolores 
-                eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, 
-                sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. 
-                Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut.              
-                Rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae 
-                dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia cor magni dolores 
-                eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, 
-                sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. 
-                Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut!
-          </div>
-            <table class="table table-hover catalog-table">
-                  <thead>
-                    <tr>
-                      <th>No.</th>
-                      <th>Name</th>
-                      <th>Type</th>
-                      <th>Modified Time</th>
-                      <th>Modified By</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>main.java</td>
-                      <td>Java file</td>
-                      <td>9:52pm</td>
-                      <td>Kelvin Wong</td>
-                    </tr>
-                    <tr>
-                      <td>2</td>
-                      <td>custom.java</td>
-                      <td>Java file</td>
-                      <td>9:52pm</td>
-                      <td>Kelvin Wong</td>
-                    </tr>
-                    <tr>
-                      <td>3</td>
-                      <td>testing.java</td>
-                      <td>Java file</td>
-                      <td>9:52pm</td>
-                      <td>Kelvin Wong</td>
-                    </tr>
-                    <tr>
-                      <td>4</td>
-                      <td>try.java</td>
-                      <td>Java file</td>
-                      <td>9:52pm</td>
-                      <td>Kelvin Wong</td>
-                    </tr>
-                    <tr>
-                      <td>5</td>
-                      <td>interface.java</td>
-                      <td>Java file</td>
-                      <td>9:52pm</td>
-                      <td>Kelvin Wong</td>
-                    </tr>
-                  </tbody>
-                </table> -->
                 {% block content %} {% endblock %}
         </div>
     </div>

@@ -5,16 +5,17 @@ class Project(models.Model):
 	"""Object of each project"""
 	title = models.CharField(u'Title', max_length=50)
 	description = models.TextField(u'Description')
+	current_phrase = models.ForeignKey('Phrase', blank=True, null=True)
 	current_iteration = models.ForeignKey('Iteration', blank=True, null=True)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
-	in_charge_by = models.ForeignKey(User,blank=False,null=False)
+	in_charge_by = models.ForeignKey(User,blank=False,null=False,related_name='in_charge_of')
+	participants = models.ManyToManyField(User,related_name='project')
 	def __str__(self):
 		return self.title
 
 class Iteration(models.Model):
 	"""Iteration binded to Project"""
-	project_id = models.ForeignKey('Project', blank=False, null=False)
 	name = models.CharField(u'name', max_length=50)
 	phase_id = models.ForeignKey('Phase', blank=False, null=False)
 	# when calling iteration, it is sorted by sequence followed by creation date
@@ -30,6 +31,7 @@ class Phase(models.Model):
 	name = models.CharField(u'name', max_length=50)
 	# when calling iteration, it is sorted by sequence followed by creation date
 	sequence = models.IntegerField(default=0)
+	sloc = models.IntegerField(default=0)
 	created_at = models.DateTimeField(auto_now_add=True)
 	def __str__(self):
 		return self.name
@@ -51,11 +53,6 @@ class ActionDescription(models.Model):
 	def __str__(self):
 		return self.title
 
-class ProjectMember(models.Model):
-	"""Members participating in the project"""
-	project_id = models.ForeignKey('Project', blank=False, null=False)
-	member_id = models.ForeignKey(User, blank=False, null=False)
-
 class Defect(models.Model):
 	"""Defect item"""
 	def __str__(self):
@@ -63,12 +60,12 @@ class Defect(models.Model):
 
 class UserInfo(models.Model):
 	"""User information"""
-	user_id = models.ForeignKey(User, blank=False, null=False)
+	user_id = models.OneToOneField(User, blank=False, null=False, primary_key=True)
 	user_type_id = models.ForeignKey('UserType', max_length=50)
 	created_at = models.DateTimeField(auto_now_add=True)
 	is_active = models.BooleanField(default=True)
 	def __str__(self):
-		return self.name
+		return "%s %s" % (self.user_id.first_name, self.user_id.last_name)
 
 class UserType(models.Model):
 	"""User type"""

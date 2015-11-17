@@ -15,13 +15,16 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from pdttracker.views import home
+from pdttracker.views import home, auth_login, auth_logout, currentTime, table_view, project_view
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     # following is tested by Kelvin
-    url(r'^$', 'pdttracker.views.home'),
+    # url(r'^$', 'pdttracker.views.home'),
+    url(r'^$', 'pdttracker.views.auth_login'),
     url(r'^login/', 'pdttracker.views.auth_login'),
     url(r'^logout/', 'pdttracker.views.auth_logout'),
-    url(r'^now/', 'pdttracker.views.currentTime')
+    url(r'^now/', 'pdttracker.views.currentTime'),
+    url(r"^view/([a-zA-Z0-9_]+)/$", "pdttracker.views.table_view"),
+    url(r'^project/', 'pdttracker.views.project_view'),
 ]
