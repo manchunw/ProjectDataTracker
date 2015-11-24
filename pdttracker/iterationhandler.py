@@ -16,7 +16,10 @@ from django.core.urlresolvers import reverse
 def create_iteration(phase):
    
     for num in range(1,5):
-            Iteration.objects.create(iteration_name= 'iteration'+ num, in_phase= phase)
+        newIteration = Iteration.objects.create(iteration_name= 'iteration'+ num, in_phase= phase, iteration_sequence=num)
+        newReport = ReportHandler.add_iteration_report(newIteration)
+        newIteration.iteration_report = newReport
+        newIteration.save()
 
         
     return null
@@ -41,3 +44,13 @@ def get_iteration_list(phaseid):
     iteration_list= Iteration.objects.filter(in_phase=p)
    
     return iteration_list
+
+@login_required
+def get_previous_iteration(curr_iteration):
+    prev_seq = curr_iteration.iteration_sequence - 1
+    if prev_seq == 0:
+        return null
+    else:
+        prev = Iteration.objects.filter(phase=curr_iteration.in_phase).get(iteration_sequence=prev_seq)
+   
+    return prev

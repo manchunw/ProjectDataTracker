@@ -15,7 +15,8 @@ from django.core.urlresolvers import reverse
 @login_required
 def add_defect(defect_title, defect_type,defect_description,defect_remarks,recorded_in,iteration_injected):
 	newDefect= Defect.objects.create(
-	defect_title = defect_title, defect_type = defect_type,
+	defect_title = defect_title,
+	defect_type = defect_type,
 	defect_description = defect_description,
 	defect_remarks = defect_remarks,
 	recorded_in = recorded_in,

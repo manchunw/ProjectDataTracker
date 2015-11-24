@@ -14,8 +14,9 @@ class Project(models.Model):
 	updated_at = models.DateTimeField(auto_now=True)
 	in_charge_by = models.ForeignKey(User,blank=False,null=False,related_name='in_charge_of')
 	# report must be created before project can be created
-	project_report = models.ForeignKey('Report', blank=False, null=False)
+	project_report = models.ForeignKey('Report', blank=True, null=True)
 	is_active = models.BooleanField(default=True)
+	yield_percentage = models.FloatField(default=0.8)
 	def __str__(self):
 		return self.project_title
 
@@ -57,6 +58,7 @@ class ActionLog(models.Model):
 class ActionLogDescription(models.Model):
 	"""Action type for each user"""
 	title = models.CharField(u'Action log description title', max_length=50)
+	short_title = models.CharField(u'Action log short name', max_length=10)
 	def __str__(self):
 		return self.title
 
@@ -82,26 +84,30 @@ class ProjectMember(models.Model):
 
 class Timer(models.Model):
 	"""Timer log"""
-	time = models.IntegerField(default=0)
+	created_for = models.ForeignKey('Project', blank=True, null=True)
+	num_hrs = models.FloatField(default=0)
+	mode = models.CharField(blank=False, null=False, default="devmode", max_length=10)
 	is_active = models.BooleanField(default=True)
-	timer_created_by = models.ForeignKey('ProjectMember', blank=True, null=True)
 	def __str__(self):
 		return "%s %s in %s" % (self.timer_created_by.member.first_name, self.timer_created_by.member.last_name, self.timer_created_by.work_in.project_title)
 
 class Report(models.Model):
 	"""Report generation"""
 	report_title = models.CharField(u'Report title', max_length=50)
-	defects_injected = models.IntegerField(default=0)
-	defects_removed = models.IntegerField(default=0)
-	delivered_sloc = models.IntegerField(default=0)
-	delivered_sloc_of_project = models.FloatField(default=0) # percentage
+	defects_injected = models.IntegerField(default=0)					# input
+	defects_removed = models.IntegerField(default=0)					# input
+	delivered_sloc = models.IntegerField(default=0)						# input
+	delivered_sloc_of_project = models.FloatField(default=0)			# percentage
 	person_mths = models.IntegerField(default=0)
-	person_mths_of_project = models.FloatField(default=0) # percentage
+	person_mths_of_project = models.FloatField(default=0)				# percentage
 	delivered_sloc_per_person_mths = models.FloatField(default=0)
 	injection_rate_per_person_hrs = models.FloatField(default=0)
-	person_hrs = models.IntegerField(default=0)
+	removal_rate_per_person_hrs = models.FloatField(default=0)
+	person_hrs_devmode = models.FloatField(default=0)					# input
+	person_hrs_defectmode = models.FloatField(default=0)				# input
+	person_hrs_mgmtmode = models.FloatField(default=0)					# input
 	defect_density_per_ksloc = models.FloatField(default=0)
-	yield_value = models.FloatField(default=0) # percentage
+	yield_value = models.FloatField(default=0)							# percentage
 	def __str__(self):
 		return self.report_title
 		

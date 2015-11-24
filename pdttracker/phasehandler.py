@@ -16,7 +16,10 @@ from django.core.urlresolvers import reverse
 def create_phase(project):
    
     for num in range(1,5):
-            Phase.objects.create(phase_name= 'phase'+ num, in_project= project)
+        newPhase = Phase.objects.create(phase_name= 'phase'+ num, in_project= project)
+        newReport = ReportHandler.add_phase_report(newPhase)
+        newPhase.phase_report = newReport
+        newPhase.save()
 
         
     return null
@@ -57,4 +60,13 @@ def get_phase_list(projectid):
    
     return phase_list
 
+@login_required
+def get_previous_phase(curr_phase):
+    prev_seq = curr_phase.phase_sequence - 1
+    if prev_seq == 0:
+        return null
+    else:
+        prev = Phase.objects.filter(project=curr_phase.in_project).get(phase_sequence=prev_seq)
+   
+    return prev
 

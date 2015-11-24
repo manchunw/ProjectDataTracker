@@ -28,17 +28,17 @@ def add_project(request,project_title, project_description,project_sloc,current_
 #        context = {
 #            "title": "Thank you"
 #    }
-
-        # newReport = ReportHandler.add_project_report()
-        newReport = Report.objects.create(report_title="on99")
+        # newReport = Report.objects.create(report_title="on99")
         newProject = Project.objects.create(project_title=project_title, 
         project_description=project_description, 
         project_sloc= project_sloc,
         current_phase= current_phase,
         current_iteration= current_iteration,
-        in_charge_by = request.user,
-        project_report = newReport
+        in_charge_by = request.user
         )
+        newReport = ReportHandler.add_project_report(newProject)
+        newProject.project_report = newReport
+        newProject.save()
         for member in assign_member:
             add_developer_to_project(member, newProject)
         

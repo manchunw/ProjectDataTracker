@@ -8,6 +8,7 @@ from django.contrib.auth.models import User, Group
 from pdttracker.models import *
 from pdttracker.tables import *
 from django_tables2 import RequestConfig
+from .ReportHandler import get_yield, get_report
 from .forms import *
 import datetime
 from django.core.urlresolvers import reverse
@@ -247,5 +248,33 @@ def editDefect(request, pk):
         form.save()
         return redirect(reverse(defect_view))
     return render(request, 'editDefect.html', {'form': form})
+
+def report_view(request, reporttype, pk):
+    reporttypestr = str(reporttype)
+    if reporttypestr == 'project':
+        # project report
+        pj = Project.objects.get(pk=pk)
+        rt = get_report(reporttype, pj)
+        (ds, inject_iteration, resolve_iteration, inject_num, resolve_num, escape_arr, yield_arr) = get_yield(pj)
+        return render(request, "project_report.html", {
+            'report': rt, 
+            'ds': ds, 
+            'inject_iteration': inject_iteration,
+            'resolve_iteration': resolve_iteration,
+            'inject_num': inject_num,
+            'resolve_num': resolve_num,
+            'escape_arr': escape_arr,
+            'yield_arr': yield_arr,
+        })
+    elif reporttypestr == 'phase':
+        # phase report
+        ph = Phase.objects.get(pk=pk)
+        rt = get_report(reporttype, ph)
+        return render(request, "phase_report.html", {'report': rt})
+    elif reporttypestr == 'iteration':
+        # iteration report
+        it = Iteration.objects.get(pk=pk)
+        rt = get_report(reporttype, ph)
+        return render(request, "iteration_report.html", {'report': rt})
 
 
