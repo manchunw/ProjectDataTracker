@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% load render_table from django_tables2 %}
+
+{% block content %}
+
+<style>
+	.manager{
+		text-align: center;
+	}
+	.manager:hover{
+		background-color: #b3e8ff;
+	}
+	.boxes{
+		border: 1px solid;
+   		border-radius: 5px;
+	}
+	h5{
+		background-color: #ddd;
+	}
+</style>
+
+
+<h3>{{companyName}}</h3>
+
+<div class="row">
+	<div class="col-md-3 boxes">
+		<h5>Managers:</h5>
+		<ul class="list-group">
+			{% for manager in mangers %}
+		  <li class="list-group-item"><div class="manager" id="{{manager.id}}">{{manager.name}}</div></li>
+			{% endfor %}
+			<li class="list-group-item"><div class="manager" id="{{manager.id}}">testing</div></li>
+		</ul>
+	</div>
+	<div class="col-md-1"></div>
+	<div class="col-md-3 boxes">
+		<h5>Developers:</h5>
+		<ul class="list-group">
+			{% for developer in developers %}
+		  <li class="list-group-item"><div class="developer" id="{{developer.id}}">{{developer.name}}</div></li>
+			{% endfor %}
+		</ul>
+	</div>
+	<div class="col-md-1"></div>
+	<div class="col-md-3 boxes">
+		<h5>Add User:</h5>
+		<form>
+			<input type="text" placeholder="name" style="margin-bottom:5px">
+			<select style="margin-bottom:5px">
+				<option value="developer">developer</option>
+				<option value="manager">manager</option>
+			</select>
+			<input type="text" placeholder="username" style="margin-bottom:5px">
+			<input type="text" placeholder="password" style="margin-bottom:5px">
+			<input type="submit" value="add" style="margin: 5px auto; display:block;">
+		</form>
+	</div>
+	<div class="col-md-1"></div>
+</div>
+
+<div class="row" style="margin-top:20px">
+	<div class="col-md-11 boxes">
+		<h5>User Details</h5>
+		<form>
+			<div class="row">
+				<div class="col-md-1">
+					Name:
+					<br><br><br>
+					role:
+					<br>
+				</div>
+				<div class="col-md-2">
+					<input type="text" placeholder="test">
+					<br>
+					<input type="text" placeholder="test">
+					<br>
+				</div>
+				<div class="col-md-1"></div>
+				<div class="col-md-1">
+					username:
+					<br><br><br>
+					password:
+					<br>
+				</div>
+				<div class="col-md-2">
+					<input type="text" placeholder="test">
+					<br>
+					<input type="text" placeholder="test">
+					<br>
+				</div>
+				<div class="col-md-2"></div>
+				<div class="col-md-2"><input type="submit" value="save changes" style="margin: 70px 5px auto auto; display:block;"></div>
+			</div>
+		</form>
+	</div>
+</div>
+<script>
+	$( ".manager" ).click(function() {
+  		alert( "Handler for .click() called." );
+	});
+
+	$( ".developer" ).click(function() {
+  		alert( "Handler for .click() called." );
+	});
+</script>
+{% endblock %}

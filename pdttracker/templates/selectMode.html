@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% load render_table from django_tables2 %}
+
+{% block content %}
+
+	<div class="row"> <!--put project information inside this row-->
+		<div class="col-md-2">
+			<p>Selected Project: <br> Team: </p>
+		</div>
+		<div class="col-md-2">
+			<p>{{ projectName }} <br> {{ teamName }}</p>
+		</div>
+		<div class="col-md-2">
+			<p>Current iteration: <br> Current Phase: </p>
+		</div>
+		<div class="col-md-2">
+			<p>{{ currentItr }} <br> {{ currentPhase }}</p>
+		</div>
+		<div class="col-md-2">
+			<p>Total lapsed time: <br> Last session: </p>
+		</div>
+		<div class="col-md-2">
+			<p>{{ lapsedTime }} <br> {{ lastSession }}</p>
+		</div>
+	</div>
+
+	<div class="row"> <!--header and switch project button-->
+		<div class="col-md-5"><h1>Select Mode:</h1></div>
+		<div class="col-md-5"></div>
+		<div class="col-md-2">
+			<div class="dropdown">
+				<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					Switch Project
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+					<li><a href="#">Project_1</a></li>
+					<li><a href="#">Project 2</a></li>
+					<li><a href="#">Project 3</a></li>
+					<li><a href="#">Project 4</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+		{% if user.is_authenticated %}
+	<section> <!--modes buttons-->
+		<div class="row">
+			<div class="col-md-2"></div>
+			<div class="col-md-6">
+				<button type="button" class="btn btn-primary btn-block"><a href="/developmentMode/" style="color:white">Development Mode</a></button>
+			</div>
+			<div class="col-md-4"></div>
+		</div>
+		<br>
+		<div class="row">
+			<div class="col-md-3"></div>
+			<div class="col-md-6">
+				<button type="button" class="btn btn-info btn-block"><a href="/defect_form/" style="color:white">Defect Removal Mode</a></button>
+			</div>
+			<div class="col-md-3"></div>
+		</div>
+		<br>
+		<div class="row">
+			<div class="col-md-4"></div>
+			<div class="col-md-6">
+				<button type="button" class="btn btn-warning btn-block"><a href="/view/defect/" style="color:white">Management Mode</a></button>
+			</div>
+			<div class="col-md-2"></div>
+		</div>
+			
+
+		{% endif %}
+
+	</section>
+
+
+{% endblock %}

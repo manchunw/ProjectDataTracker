@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script>
+$(document).ready(function(){
+	var x = document.getElementById("clock");
+	x.style.display = "block";
+});
+</script>
+
+<div class="row"> <!--header and switch project button-->
+		<div class="col-md-6"><h1>Defect Removal Mode</h1></div>
+		<div class="col-md-2"></div>
+		<div class="col-md-2">
+			<div class="dropdown">
+				<button class="btn btn-default dropdown-toggle" type="button" id="projectMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					Switch Project
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+					<li><a href="#">Project_1</a></li>
+					<li><a href="#">Project 2</a></li>
+					<li><a href="#">Project 3</a></li>
+					<li><a href="#">Project 4</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-md-2">
+			<div class="dropdown">
+				<button class="btn btn-default dropdown-toggle" type="button" id="modeMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					Switch Mode
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+					<li><a href="/view/defect/">Management Mode</a></li>
+					<li><a href="/developmentMode/">Development Mode</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+<form action="" method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Create" />
+</form>
+
+{% endblock %}

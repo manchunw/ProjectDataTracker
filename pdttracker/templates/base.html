@@ -63,5 +63,37 @@
     </div>
 </div>
 
+
+
   </body>
+
+  <div class="row" id="clock" style="display:none">
+  <div class="col-md-10"></div>
+  <div class="col-md-2">
+    <img src="/static/img/pause.png" data-toggle="modal" data-target="#pauseModal" style="width:150px; height:150px;" id="pauseTimer" data-backdrop="static" data-keyboard="false">
+      <!-- Trigger the modal with a button -->
+      <div id="pauseModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <!--button type="button" class="close" data-dismiss="modal">&times;</button-->
+              <h4 class="modal-title">You are currently away. Press to Resume</h4>
+            </div>
+              <div class="modal-body">
+                <img src="/static/img/resume.png" id="resumeTimer" class="close" data-dismiss="modal" style="margin-top: 40px; margin-right: 150px;">
+                Current Time:  {{time}}
+              </div>
+            <div class="modal-footer">
+            </div>
+          </div>
+        </div>
+      </div>
+      <h6 class="text-center">Current time</h3>
+      <h5 class="text-center">{{time}}</h1>
+  </div>
+  </div>
+</div>
+
 </html>

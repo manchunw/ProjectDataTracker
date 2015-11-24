@@ -1,16 +1,19 @@
 import django_tables2 as tables
 from django.contrib.auth.models import User, Group
 from pdttracker.models import *
+from django_tables2.utils import A
 
 class ProjectTable(tables.Table):
     class Meta:
         model = Project
         attrs = {"class": "table"}
+    project_title = tables.LinkColumn('editProject', args=[A('pk')])
 
 class IterationTable(tables.Table):
     class Meta:
         model = Iteration
         attrs = {"class": "table"}
+    iteration_name = tables.LinkColumn('editIteration', args=[A('pk')])
 
 class PhaseTable(tables.Table):
     class Meta:
@@ -43,3 +46,4 @@ class DefectTable(tables.Table):
     class Meta:
         model = Defect
         attrs = {"class": "table"}
+    defect_title = tables.LinkColumn('editDefect', args=[A('pk')])
