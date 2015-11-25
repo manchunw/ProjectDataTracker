@@ -44,7 +44,7 @@ class Phase(models.Model):
 
 class ActionLog(models.Model):
 	"""Action log for each user"""
-	action_log_created_by = models.ForeignKey('ProjectMember', blank=True, null=True)
+	action_log_created_by = models.ForeignKey(User, blank=True, null=True)
 	action_log_description = models.ForeignKey('ActionLogDescription', blank=True, null=True)
 	project_tracked = models.ForeignKey('Project', blank=True, null=True)
 	defect_tracked = models.ForeignKey('Defect', blank=True, null=True)

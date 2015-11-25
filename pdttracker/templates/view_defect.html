@@ -21,10 +21,9 @@ $(document).ready(function(){
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-					<li><a href="#">Project_1</a></li>
-					<li><a href="#">Project 2</a></li>
-					<li><a href="#">Project 3</a></li>
-					<li><a href="#">Project 4</a></li>
+					{% for project in projects %}
+					<li><a href="#">{{project.project_title}}</a></li>
+					{% endfor %}
 				</ul>
 			</div>
 		</div>

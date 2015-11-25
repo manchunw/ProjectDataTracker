@@ -40,7 +40,7 @@ urlpatterns = [
     url(r'^welcome/', 'pdttracker.views.welcome', name='welcome'),
     url(r'^modifyProject/(?P<pk>[0-9]+)', 'pdttracker.views.modifyProject', name='modifyProject'),
     url(r"^report/([a-zA-Z0-9_]+)/([a-zA-Z0-9_]+)/$", "pdttracker.views.report_view"),
-            
+
     
 
 ]

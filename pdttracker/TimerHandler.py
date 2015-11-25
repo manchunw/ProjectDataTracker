@@ -1,9 +1,9 @@
 from datetime import timedelta
-from pdttracker.models import Timer
-from pdttracker.ActionLogHandler import get_latest_timer_start, get_current_mode
+from django.db.models import F
+from pdttracker.models import *
 from pdttracker.ReportHandler import add_to_person_hrs
 
-def start_timer(request, mode, time, project=null, defect=null):
+def start_timer(request, mode, time, project=None, defect=None):
 	user = request.user
 	if not Timer.objects.filter(mode=mode, created_for=project).exists():
 		timer = Timer.objects.create(
@@ -12,26 +12,28 @@ def start_timer(request, mode, time, project=null, defect=null):
 		)
 		return timer
 	else: 
-		return null
+		return None
 
-def end_timer(request, user, time, project=null, defect=null):
+def end_timer(request, time, last_time, mode, project=None, defect=None):
 	user = request.user
-	(action_log, last_time) = get_latest_timer_start(request)
-	(mode, mode_time) = get_current_mode(request)
-	timer = Timer.objects.get(created_for=project, mode=mode)
-	timer.num_hrs = timer.num_hrs + ((time - last_time) / timedelta(seconds=1) / 3600)
-	timer.save()
-	newTimer = Timer.objects.get(created_for=project, mode=mode)
-	return newTimer
+	if time is not None and last_time is not None:
+		Timer.objects.filter(created_for=project, mode=mode).update(
+		    num_hrs = F('num_hrs') + ((time - last_time) / timedelta(seconds=1) / 3600),
+		)
+	newTimer = Timer.objects.filter(created_for=project, mode=mode)
+	if newTimer.count() > 0:
+		return newTimer
+	else:
+		return None
 
-def reset_timer(time, project=null, phase=null, iteration=null):
-	if not iteration == null:
+def reset_timer(time, project=None, phase=None, iteration=None):
+	if not iteration == None:
 		rt = Report.objects.filter(iteration=iteration)
 		ph = Phase.objects.filter(iteration=iteration)[:1].get()
 		pj = Project.objects.filter(phase=ph)[:1].get()
-	elif not phase == null:
+	elif not phase == None:
 		pj = Project.objects.filter(phase=phase)[:1].get()
-	elif not project == null:
+	elif not project == None:
 		pj = project
 
 	devmode = Timer.objects.get(created_for=pj, mode='devmode')

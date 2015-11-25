@@ -13,6 +13,7 @@ from .forms import *
 import datetime
 from django.core.urlresolvers import reverse
 from pdttracker.projecthandler import *
+from pdttracker.ActionLogHandler import add_action_log
 
 def home(request):
     s = "Hello World!"
@@ -31,6 +32,7 @@ def auth_login(request):
             if user:
                 if user.is_active:
                     login(request, user)
+                    add_action_log(request, 'login')
                     next_page = request.GET.get("next")
                     if next_page:
                     	return HttpResponseRedirect(next_page)
@@ -49,7 +51,8 @@ def auth_login(request):
 
 @login_required
 def auth_logout(request):
-    logout(request)
+    # logout(request)
+    add_action_log(request, 'logout')
     return HttpResponseRedirect("/login/")
 
 @login_required
@@ -94,7 +97,7 @@ def welcome(request):
 def project_view(request):
     table = ProjectTable(get_project_list(request))
 #    table = ProjectTable(Project.objects.filter(in_charge_by=request.user))
-    RequestConfig(request).configure(table)
+    RequestConfig(request, paginate={"per_page": 10}).configure(table)
     return render(request, "view_project.html", {"project": table})
 
 @login_required
@@ -110,37 +113,37 @@ def modifyProject(request, pk):
 @login_required
 def iteration_view(request):
     table = IterationTable(Iteration.objects.all())
-    RequestConfig(request).configure(table)
+    RequestConfig(request, paginate={"per_page": 10}).configure(table)
     return render(request, "view_iteration.html", {"iteration": table})
 
 @login_required
 def phase_view(request):
     table = PhaseTable(Phase.objects.all())
-    RequestConfig(request).configure(table)
+    RequestConfig(request, paginate={"per_page": 10}).configure(table)
     return render(request, "view_phase.html", {"phase": table})
 
 @login_required
 def action_log_view(request):
     table = ActionLogTable(ActionLog.objects.all())
-    RequestConfig(request).configure(table)
+    RequestConfig(request, paginate={"per_page": 10}).configure(table)
     return render(request, "view_action_log.html", {"action_log": table})
 
 @login_required
 def user_view(request):
     table = UserTable(User.objects.all())
-    RequestConfig(request).configure(table)
+    RequestConfig(request, paginate={"per_page": 10}).configure(table)
     return render(request, "view_user.html", {"user": table})
 
 @login_required
 def user_info_view(request):
     table = UserInfoTable(Group.objects.all())
-    RequestConfig(request).configure(table)
+    RequestConfig(request, paginate={"per_page": 10}).configure(table)
     return render(request, "view_user_info.html", {"permission": table})
 
 @login_required
 def defect_view(request):
     table = DefectTable(Defect.objects.all())
-    RequestConfig(request).configure(table)
+    RequestConfig(request, paginate={"per_page": 10}).configure(table)
     return render(request, "view_defect.html", {"defect": table})
 
 @login_required

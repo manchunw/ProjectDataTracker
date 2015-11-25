@@ -16,3 +16,4 @@ table.catalog-table>tbody>tr>td{padding:10px;border-color:transparent;}
 header{height:100px; padding:10px 0;}
 ul.nav.navbar-nav,p.navbar-text{padding:15px 0;}
 .help-link{cursor:pointer;}
+button.btn a {color:#fff;}

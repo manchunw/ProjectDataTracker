@@ -1,7 +1,5 @@
-from django.db.models import Count
-from django.db.models import F
-from pdttracker.models import Iteration, Phase, Project, Report
-from .ReportPolicy import *
+from django.db.models import Count, F
+from pdttracker.models import *
 
 def add_iteration_report(iteration):
 	"""Add iteration report when an iteration is created"""
@@ -277,9 +275,14 @@ def get_report(reporttype, entity):
 
 def get_yield(project):
 	"""get yield given a pk value of a project"""
-	ds = Defect.objects.filter(recorded_in=project).values('iteration_injected__iteration_name', 'iteration_resolved__iteration_name').order_by().annotate(num=Count('pk'))
-	ph = Phase.objects.filter(project=project).all()
-	iterations = Iteration.objects.filter(phase=ph).values('iteration_sequence').order_by('in_phase__phase_sequence', 'iteration_sequence')
+	# get table values
+	ds = Defect.objects.filter(recorded_in=project).values('iteration_injected__iteration_name', 'iteration_resolved__iteration_name').order_by('iteration_injected__in_phase__phase_sequence', 'iteration_injected__iteration_sequence', 'iteration_resolved__in_phase__phase_sequence', 'iteration_resolved__iteration_sequence').annotate(num=Count('pk'))
+	# get resolved row sum
+	rs = Defect.objects.filter(recorded_in=project).values('iteration_resolved__iteration_name').order_by('iteration_resolved__in_phase__phase_sequence', 'iteration_resolved__iteration_sequence').annotate(num=Count('pk'))
+	# get injected column sum
+	cs = Defect.objects.filter(recorded_in=project).values('iteration_injected__iteration_name').order_by('iteration_injected__in_phase__phase_sequence', 'iteration_injected__iteration_sequence').annotate(num=Count('pk'))
+	ph = Phase.objects.filter(in_project=project).all()
+	iterations = Iteration.objects.filter(in_phase=ph).values('iteration_name').order_by('in_phase__phase_sequence', 'iteration_sequence')
 	inject_num = {}
 	resolve_num = {}
 	resolve_last_num = {}
@@ -287,40 +290,65 @@ def get_yield(project):
 	resolve_iteration = []
 	# initialize values
 	for i in iterations:
-		inject_num[str(i.iteration_name)] = 0
-	for i in iterations:
-		resolve_num[str(i.iteration_name)] = 0
-	for d in ds:
+		inject_num[str(i['iteration_name'])] = 0
+		resolve_num[str(i['iteration_name'])] = 0
+	for c in cs:
 		# populate total inject numbers on the bottom of the table
-		inject_num[str(d['iteration_injected__iteration_name'])] += int(d['num'])
+		inject_num[str(c['iteration_injected__iteration_name'])] = int(c['num'])
+		inject_iteration += [str(c['iteration_injected__iteration_name'])]
+	for r in rs:
 		# populate total resolve numbers on the right of the table
-		resolve_num[str(d['iteration_resolved__iteration_name'])] += int(d['num'])
+		resolve_num[str(r['iteration_resolved__iteration_name'])] += int(r['num'])
+		resolve_iteration += [str(r['iteration_resolved__iteration_name'])]
+	for d in ds:
 		# populate the last row of defect resolved, for escape calculation
 		resolve_last_num[str(d['iteration_injected__iteration_name'])] = int(d['num'])
-		if str(d['iteration_injected__iteration_name']) not in inject_iteration:
-			inject_iteration.append(str(d['iteration_injected__iteration_name']))
-		if str(d['iteration_resolved__iteration_name']) not in resolve_iteration:
-			resolve_iteration.append(str(d['iteration_resolved__iteration_name']))
 	# populate escape number and prepare for yield calculation
 	m = 0
 	n = 0
+	cumulative_escape = 0
 	cumulative_inject_num = {}
 	cumulative_resolve_num = {}
 	escape_arr = []
-	for i in len(inject_iteration):
+	for i in range(len(inject_iteration)):
 		m += inject_num[inject_iteration[i]]
 		cumulative_inject_num[inject_iteration[i]] = m
-		escape_arr[i] = round(resolve_last_num[inject_iteration[i]] * (1 - 0.8))
+		if inject_iteration[i] in resolve_last_num:
+			escape_arr.append(round(resolve_last_num[inject_iteration[i]] * (1 - 0.8)))
+		else:
+			escape_arr.append(0)
+		cumulative_escape += escape_arr[i]
 		cumulative_inject_num[inject_iteration[i]] += escape_arr[i]
-	for i in len(resolve_iteration):
+	for i in range(len(resolve_iteration)):
 		n += resolve_num[resolve_iteration[i]]
 		cumulative_resolve_num[resolve_iteration[i]] = n
 	# populate yield
 	yield_arr = []
-	for i in len(inject_iteration):
+	for i in range(len(inject_iteration)):
 		if i == 0:
 			yield_arr.append(resolve_num[resolve_iteration[i]] / cumulative_inject_num[inject_iteration[i]])
 		else:
 			yield_arr.append(resolve_num[resolve_iteration[i]] / (cumulative_inject_num[inject_iteration[i]] - cumulative_resolve_num[resolve_iteration[i-1]]))
+	table_output = [[''] + inject_iteration + ['Total']]
 	# populate table-convenient output
-	return (ds, inject_iteration, resolve_iteration, inject_num, resolve_num, escape_arr, yield_arr)
+	for i in range(len(resolve_iteration)):
+		out = [resolve_iteration[i]]
+		for j in range(len(inject_iteration)):
+			check = False
+			for d in ds:
+				if d['iteration_injected__iteration_name'] == inject_iteration[j] and d['iteration_resolved__iteration_name'] == resolve_iteration[i]:
+					check = True
+					out.append(str(d['num']))
+			if check == False:
+				out.append('')
+		out.append(str(cumulative_resolve_num[resolve_iteration[i]]))
+		table_output.append(out)
+	out2 = [['Escapes'] + [str(x) for x in escape_arr] + [str(cumulative_escape)]]
+	table_output.append(out2)
+	num_list = [v for v in cumulative_inject_num.values()]
+	sum_list = str(sum(num_list))
+	out3 = [['Total'] + [str(v) for v in cumulative_inject_num.values()] + [sum_list]]
+	table_output.append(out3)
+
+	# return (ds, inject_iteration, resolve_iteration, inject_num, resolve_num, escape_arr, yield_arr)
+	return (table_output, yield_arr)

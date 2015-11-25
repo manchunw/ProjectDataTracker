@@ -18,12 +18,114 @@
 	h5{
 		background-color: #ddd;
 	}
+	.dropdownButton, .dropdown2{
+		margin-right: 0;
+		margin-left: auto;
+		margin-bottom: 10px;
+		display: block;
+	}
 </style>
 
 
 <h3>{{companyName}}</h3>
 
-<div class="row">
+{% if user in group.Administrator %}
+<!-- if the user is a admin -->
+ <div class="row">
+	<div class="col-md-3 boxes">
+		<h5>List of Users:</h5>
+		<div class="dropdown dropdown2">
+		  <button class="btn btn-primary dropdown-toggle dropdownButton" type="button" data-toggle="dropdown">Select Role
+		  <span class="caret"></span></button>
+		  <ul class="dropdown-menu">
+		    <li><a href="#">Developer</a></li>
+		    <li><a href="#">Manager</a></li>
+		    <li><a href="#">HR Staff</a></li>
+		    <li><a href="#">All</a></li>
+		  </ul>
+		</div>
+		<ul class="list-group">
+			{% for manager in mangers %}
+		  <li class="list-group-item"><div class="manager" id="{{manager.id}}">{{manager.name}}</div></li>
+			{% endfor %}
+			<li class="list-group-item"><div class="manager" id="{{manager.id}}">testing</div></li>
+		</ul>
+	</div>
+	<div class="col-md-1"></div>
+	<div class="col-md-3 boxes">
+		<h5>Projects:</h5>
+		<ul class="list-group">
+			{% for project in projects %}
+		  <li class="list-group-item"><div class="project" id="{{project.id}}">{{project.name}}</div></li>
+			{% endfor %}
+		</ul>
+	</div>
+	<div class="col-md-1"></div>
+	<div class="col-md-3 boxes">
+		<h5>Defects:</h5>
+		<ul class="list-group">
+			{% for defect in defects %}
+		  <li class="list-group-item"><div class="defect" id="{{defect.id}}">{{defect.name}}</div></li>
+			{% endfor %}
+		</ul>
+	</div>
+	<div class="col-md-1"></div>
+</div>
+
+
+<div class="row" style="margin-top:20px">
+	<div class="col-md-8 boxes">
+		<h5>User/Project/Defect Details:</h5>
+		<form>
+			<div class="row">
+				<div class="col-md-2">
+					Name:
+					<br><br><br>
+					role:
+					<br>
+				</div>
+				<div class="col-md-3">
+					<input type="text" placeholder="test" name="name">
+					<br>
+					<input type="text" placeholder="test" readonly>
+					<br>
+				</div>
+				<div class="col-md-2">
+					username:
+					<br><br><br>
+					password:
+					<br>
+				</div>
+				<div class="col-md-3">
+					<input type="text" placeholder="test" name="username">
+					<br>
+					<input type="text" placeholder="test" name="password">
+					<br>
+				</div>
+				<div class="col-md-1"><input type="submit" value="save changes" style="margin: 70px 5px auto auto; display:block;"></div>
+			</div>
+		</form>
+	</div>
+	<div class="col-md-3 boxes">
+		<h5>Add User:</h5>
+		<form>
+			<input type="text" placeholder="name" style="margin-bottom:5px" name="name">
+			<select style="margin-bottom:5px" name="role">
+				<option value="developer">developer</option>
+				<option value="manager">manager</option>
+				<option value="manager">HR Staff</option>
+			</select>
+			<input type="text" placeholder="username" style="margin-bottom:5px" name="username">
+			<input type="text" placeholder="password" style="margin-bottom:5px" name="password">
+			<input type="submit" value="add" style="margin: 5px auto; display:block;">
+		</form>
+	</div>
+	<div class="col-md-1"></div>
+</div>
+
+{% else %} 
+<!-- if the user is a manager -->
+ <div class="row">
 	<div class="col-md-3 boxes">
 		<h5>Managers:</h5>
 		<ul class="list-group">
@@ -46,13 +148,13 @@
 	<div class="col-md-3 boxes">
 		<h5>Add User:</h5>
 		<form>
-			<input type="text" placeholder="name" style="margin-bottom:5px">
-			<select style="margin-bottom:5px">
+			<input type="text" placeholder="name" style="margin-bottom:5px" name="name">
+			<select style="margin-bottom:5px" name="role">
 				<option value="developer">developer</option>
 				<option value="manager">manager</option>
 			</select>
-			<input type="text" placeholder="username" style="margin-bottom:5px">
-			<input type="text" placeholder="password" style="margin-bottom:5px">
+			<input type="text" placeholder="username" style="margin-bottom:5px" name="username">
+			<input type="text" placeholder="password" style="margin-bottom:5px" name="password">
 			<input type="submit" value="add" style="margin: 5px auto; display:block;">
 		</form>
 	</div>
@@ -61,7 +163,7 @@
 
 <div class="row" style="margin-top:20px">
 	<div class="col-md-11 boxes">
-		<h5>User Details</h5>
+		<h5>User Details:</h5>
 		<form>
 			<div class="row">
 				<div class="col-md-1">
@@ -71,9 +173,9 @@
 					<br>
 				</div>
 				<div class="col-md-2">
-					<input type="text" placeholder="test">
+					<input type="text" placeholder="test" name="name">
 					<br>
-					<input type="text" placeholder="test">
+					<input type="text" placeholder="test" readonly>
 					<br>
 				</div>
 				<div class="col-md-1"></div>
@@ -84,9 +186,9 @@
 					<br>
 				</div>
 				<div class="col-md-2">
-					<input type="text" placeholder="test">
+					<input type="text" placeholder="test" name="username">
 					<br>
-					<input type="text" placeholder="test">
+					<input type="text" placeholder="test" name="password">
 					<br>
 				</div>
 				<div class="col-md-2"></div>
@@ -95,12 +197,23 @@
 		</form>
 	</div>
 </div>
+{% endif %}
+
+
 <script>
 	$( ".manager" ).click(function() {
   		alert( "Handler for .click() called." );
 	});
 
 	$( ".developer" ).click(function() {
+  		alert( "Handler for .click() called." );
+	});
+
+	$( ".project" ).click(function() {
+  		alert( "Handler for .click() called." );
+	});
+
+	$( ".defect" ).click(function() {
   		alert( "Handler for .click() called." );
 	});
 </script>
