@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h1>{{ project.project_title }}</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<h3>{{ project.project_title }}</h3>
+<p>Project description: {{ project.project_description }}</p>
+<p>SLOC: {{ project.project_sloc }}</p>
+<p>Number of Phase: {{ project.num_phase }} </p>
+<p>Number of Iteration: {{ project.num_iteration }} </p>
+<p>Current Phase: {{ project.current_phase }} </p>
+<p>Current Iteration: {{ project.current_iteration }} </p>
+<p>Created at: {{ project.created_at }} </p>
+<p>In Charge By: {{ project.in_charge_by }} </p>
+<p>Is Active: {{ project.is_active }} </p>
+<p>Yield Percentage: {{ project.yield_percentage }} </p>
+
+
+<button type="button" class="btn btn-info"><a href="/project">Return to Project List</a></button>
+
+<button type="button" class="btn btn-info"><a href="/view_defect">View Defect List</a></button>
+
+
+
+
+
+
+ {% endblock %}

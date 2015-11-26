@@ -38,7 +38,7 @@ class Phase(models.Model):
 	phase_sloc = models.IntegerField(default=0)
 	in_project = models.ForeignKey('Project', blank=False, null=False)
 	# report must be created before phase can be created
-	phase_report = models.ForeignKey('Report', blank=False, null=False)
+	phase_report = models.ForeignKey('\Report', blank=False, null=False)
 	def __str__(self):
 		return self.phase_name
 
@@ -110,22 +110,4 @@ class Report(models.Model):
 	yield_value = models.FloatField(default=0)							# percentage
 	def __str__(self):
 		return self.report_title
-		
-# class UserInfo(models.Model):
-# 	"""User information"""
-# 	user_id = models.OneToOneField(User, blank=False, null=False, primary_key=True)
-# 	user_type_id = models.ForeignKey('UserType', max_length=50)
-# 	created_at = models.DateTimeField(auto_now_add=True)
-# 	updated_at = models.DateTimeField(auto_now=True)
-# 	is_active = models.BooleanField(default=True)
-# 	def __str__(self):
-# 		return "%s %s" % (self.user_id.first_name, self.user_id.last_name)
-
-# class UserType(models.Model):
-# 	"""User type"""
-# 	title = models.CharField(u'User Type', max_length=50)
-# 	created_at = models.DateTimeField(auto_now_add=True)
-# 	def __str__(self):
-# 		return self.title
-		
 		

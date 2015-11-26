@@ -124,7 +124,7 @@ def phase_view(request):
 
 @login_required
 def action_log_view(request):
-    table = ActionLogTable(ActionLog.objects.all())
+    table = ActionLogTable(ActionLog.objects.all().order_by('-created_at'))
     RequestConfig(request, paginate={"per_page": 10}).configure(table)
     return render(request, "view_action_log.html", {"action_log": table})
 
@@ -145,6 +145,27 @@ def defect_view(request):
     table = DefectTable(Defect.objects.all())
     RequestConfig(request, paginate={"per_page": 10}).configure(table)
     return render(request, "view_defect.html", {"defect": table})
+
+@login_required
+def project_detail(request, pk):
+    project = Project.objects.get(pk=pk)
+    context={'project':project}
+    template="project_detail.html"
+    return render(request, template, context)
+
+@login_required
+def iteration_detail(request, pk):
+    iteration = Iteration.objects.get(pk=pk)
+    context={'iteration':iteration}
+    template="iteration_detail.html"
+    return render(request, template, context)
+
+@login_required
+def defect_detail(request, pk):
+    defect = Defect.objects.get(pk=pk)
+    context={'defect':defect}
+    template="defect_detail.html"
+    return render(request, template, context)
 
 @login_required
 def addProject(request):

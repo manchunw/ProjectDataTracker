@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h1>{{ defect.defect_title }}</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<h3>{{ defect.defect_title }}</h3>
+<p>Defect description: {{ defect.defect_description }}</p>
+<p>Defect Type: {{ defect.defect_type }}</p>
+<p>Defect Remark: {{ defect.defect_remarks }} </p>
+<p>Recoreded in: {{ defect.recorded_in }} </p>
+<p>Iteration Injected: {{ defect.iteration_injected }} </p>
+<p>Iteration Resolved: {{ defect.iteration_resolved }} </p>
+
+
+
+<button type="button" class="btn btn-info"><a href="/defect">Return to defect List</a></button>
+
+<button type="button" class="btn btn-info"><a href="/view_defect">View Defect List</a></button>
+
+
+
+
+
+
+ {% endblock %}
