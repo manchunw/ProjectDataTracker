@@ -34,17 +34,24 @@
 				</div>
 				<div class="col-md-4"></div>
 			</div>
+      <div class="row" style="margin: 10px 0">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+          <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#switchPhaseModal">Switch New Phase</button>
+        </div>
+        <div class="col-md-4"></div>
+      </div>
+      <div class="row" style="margin: 10px 0">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+          <button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#closePhaseModal">Close Phase</button>
+        </div>
+        <div class="col-md-4"></div>
+      </div>
 			<div class="row" style="margin: 10px 0">
 				<div class="col-md-4"></div>
 				<div class="col-md-4">
-					<button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#closePhaseModal">Close Phase</button>
-				</div>
-				<div class="col-md-4"></div>
-			</div>
-			<div class="row" style="margin: 10px 0">
-				<div class="col-md-4"></div>
-				<div class="col-md-4">
-					<button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#closeProjectModal">Close Project</button>
+					<button type="button" class="btn btn-danger btn-block">Close Project</button>
 				</div>
 				<div class="col-md-4"></div>
 			</div>
@@ -65,10 +72,17 @@
 				</div>
 				<div class="col-md-4"></div>
 			</div>
+      <div class="row" style="margin: 10px 0">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+          <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#switchIterationModal">Switch New Iteration</button>
+        </div>
+        <div class="col-md-4"></div>
+      </div>
 			<div class="row" style="margin: 10px 0">
 				<div class="col-md-4"></div>
 				<div class="col-md-4">
-					<button type="button" class="btn btn-info btn-block" data-toggle="modal" data-target="#closeIterationModal">Close Iteration</button>
+					<button type="button" class="btn btn-warning btn-block" data-toggle="modal" data-target="#closeIterationModal">Close Iteration</button>
 				</div>
 				<div class="col-md-4"></div>
 			</div>
@@ -77,13 +91,16 @@
 	</div>
 	<div class="row">
 		<div class="col-md-2">
-			<button type="button" class="btn btn-info"><a href="">Return to Project List</a></button>
+			<button type="button" class="btn btn-info"><a href="/project/">Return to Project List</a></button>
 		</div>
 		<div class="col-md-8"></div>
 		<div class="col-md-2">
 			<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#closeProjectModal">Close Project</button>
 		</div>
 	</div>
+  <div class="row">
+    <br>
+  </div>
 
 	<div id="startPhaseModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
@@ -123,6 +140,42 @@
   </div>
 </div>
 
+<div id="switchPhaseModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" data-backdrop="static" data-keyboard="false">&times;</button>
+        <h4 class="modal-title">Switch to New Phase</h4>
+      </div>
+      <div class="modal-body">
+        <section>
+          <p>Please input new phase name to proceed.</p>
+          <div class="input-group">
+        <input type="text" class="form-control" placeholder="Phase name" aria-describedby="basic-addon1">
+      </div>
+        </section><br><hr>
+        <section>
+          <p><b>Optional:</b><br>
+            New iteration can now be initialized. Please input new iteration name.</p>
+          <div class="input-group">
+        <input type="text" class="form-control" placeholder="Iteration name" aria-describedby="basic-addon1">
+      </div>
+        </section><br><br>
+      </div>
+      <div class="modal-footer row">
+        <div class="col-md-4">
+          <button type="button" class="btn btn-primary btn-block" data-dismiss="modal">Cancel</button>
+        </div>
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+          <button type="button" class="btn btn-warning btn-block"><a href="">Switch New Phase</a></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="closeProjectModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
     <!-- Modal content-->
@@ -144,7 +197,7 @@
       <div class="row" style="margin-bottom: 20px">
       	<div class="col-md-4"></div>
       	<div class="col-md-4">
-      		<button type="button" class="btn btn-primary btn-block"><a href="" style="color:white">Cancel</a></button>
+      		<button type="button" class="btn btn-primary btn-block" data-dismiss="modal"><a href="" style="color:white">Cancel</a></button>
       	</div>
       	<div class="col-md-4"></div>
       </div>
@@ -179,6 +232,38 @@
   </div>
 </div>
 
+<div id="switchIterationModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" data-backdrop="static" data-keyboard="false">&times;</button>
+        <h4 class="modal-title">Switch to New Iteration</h4>
+      </div>
+      <div class="modal-body">
+        <p>Please input SLOC of closing iteation.</p>
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="SLOC" aria-describedby="basic-addon1">
+        </div>
+        <hr>
+        <p>Please input new iteration name.</p>
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="iteration_name" aria-describedby="basic-addon1">
+        </div>
+      </div>
+      <div class="modal-footer row">
+        <div class="col-md-4">
+          <button type="button" class="btn btn-primary btn-block" data-dismiss="modal">Cancel</button>
+        </div>
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+          <button type="button" class="btn btn-warning btn-block"><a href="">Switch to New Iteration</a></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="closeIterationModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
     <!-- Modal content-->
@@ -190,8 +275,8 @@
       <div class="modal-body">
         	<p>Please input SLOC to proceed.</p>
         	<div class="input-group">
-				<input type="text" class="form-control" placeholder="SLOC" aria-describedby="basic-addon1">
-			</div>
+  				  <input type="text" class="form-control" placeholder="SLOC" aria-describedby="basic-addon1">
+  			  </div>
       </div>
       <div class="modal-footer row">
       	<div class="col-md-4">

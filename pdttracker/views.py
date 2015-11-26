@@ -14,6 +14,9 @@ import datetime
 from django.core.urlresolvers import reverse
 from pdttracker.projecthandler import *
 from pdttracker.ActionLogHandler import add_action_log
+from django.views.generic import View
+from pdttracker.GroupHandler import *
+from django.utils.decorators import method_decorator
 
 def home(request):
     s = "Hello World!"
@@ -37,7 +40,14 @@ def auth_login(request):
                     if next_page:
                     	return HttpResponseRedirect(next_page)
                     else:
-                        return redirect(reverse(project_view))
+                        if in_group(user, "Administrator"):
+                            return redirect(reverse(welcomeAdmin))
+                        if in_group(user, "Manager"):
+                            return redirect(reverse(project_view))
+                        if in_group(user, "HR"):
+                            return redirect(reverse(welcomeHR))
+                        if in_group(user, "Developer"):
+                            return redirect(reverse(project_view))
                 else:
                     return HttpResponse("Your PDT account is disabled.")
             else:
@@ -51,8 +61,8 @@ def auth_login(request):
 
 @login_required
 def auth_logout(request):
-    # logout(request)
     add_action_log(request, 'logout')
+    logout(request)
     return HttpResponseRedirect("/login/")
 
 @login_required
@@ -81,24 +91,39 @@ def currentTime(request):
     return render(request, 'view_time.html', {"time": str(s)})
 
 @login_required
-def selectMode(request):
-    return render(request, 'selectMode.html', {})
+def selectMode(request, pk):
+    project = Project.objects.get(pk=pk)
+    add_action_log(request, 'enterproj', project)
+    return render(request, 'selectMode.html', {"project": project})
 
 @login_required
-def developmentMode(request):
-    return render(request, 'developmentMode.html', {})
+def developmentMode(request, pk):
+    project = Project.objects.get(pk=pk)
+    add_action_log(request, 'devmode', project)
+    return render(request, 'developmentMode.html', {"project": project})
 
 @login_required
-def welcome(request):
-    return render(request, 'welcome.html', {})
+def welcomeHR(request):
+    ManagerList = Group.objects.get(name="Manager").user_set.all()
+    DeveloperList = Group.objects.get(name="Developer").user_set.all()
+    context={'ManagerList':ManagerList, 
+              'DeveloperList':DeveloperList  }
+    return render(request, 'welcomeHR.html', context)
 
+@login_required
+def welcomeAdmin(request):
+    return render(request, 'welcomeAdmin.html', {})
 
 @login_required
 def project_view(request):
-    table = ProjectTable(get_project_list(request))
+    if in_group(request.user, "Manager") or in_group(request.user, "Administrator"):
+        table = ManagerProjectTable(get_project_list(request))
+    else:
+        table = DeveloperProjectTable(get_project_list(request))
+
 #    table = ProjectTable(Project.objects.filter(in_charge_by=request.user))
     RequestConfig(request, paginate={"per_page": 10}).configure(table)
-    return render(request, "view_project.html", {"project": table})
+    return render(request, "view_project.html", {"project": table, "user": request.user})
 
 @login_required
 def modifyProject(request, pk):
@@ -141,10 +166,12 @@ def user_info_view(request):
     return render(request, "view_user_info.html", {"permission": table})
 
 @login_required
-def defect_view(request):
+def defect_view(request, pk):
+    project = Project.objects.get(pk=pk)
+    add_action_log(request, 'mgmtmode', project)
     table = DefectTable(Defect.objects.all())
     RequestConfig(request, paginate={"per_page": 10}).configure(table)
-    return render(request, "view_defect.html", {"defect": table})
+    return render(request, "view_defect.html", {"defect": table, "project": project})
 
 @login_required
 def project_detail(request, pk):
@@ -192,14 +219,7 @@ def addProject(request):
 
     return render(request, "project_form.html", context)
 
-@login_required
-def editProject(request, pk):
-    instance = Project.objects.get(pk=pk)
-    form = ProjectForm(request.POST or None, instance=instance)
-    if form.is_valid():
-        form.save()
-        return redirect(reverse(project_view))
-    return render(request, 'editProject.html', {'form': form})
+
 
 @login_required
 def removeProject(request, id):
@@ -244,51 +264,59 @@ def removeIteration(request, id):
 
     return render(request, "view_iteration.html", context)
 
-@login_required
-def addDefect(request):
-    title = 'Add Defect Now'
-    form = DefectForm(request.POST or None)
-    context = {
-        "title": title,
-        "form": form
-    }
-    if form.is_valid():
-        #form.save()
-        #print request.POST['email'] #not recommended
-        instance = form.save(commit=False)
-        instance.save()
+class addDefect(View):
+    @method_decorator(login_required)
+    def get(self, request, pk):
+        project = Project.objects.get(pk=pk)
+        add_action_log(request, 'defectmode', project)
+        title = 'Add Defect Now'
+        form = DefectForm()
         context = {
-            "title": "Thank you"
-    }
+            "title": title,
+            "form": form,
+            "project": project,
+        }
+
+        return render(request, "defect_form.html", context)
+    @method_decorator(login_required)
+    def post(self, request, pk):
+        form = DefectForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.save()
+            
+        return HttpResponseRedirect("/view_defect/" + str(pk) + "/")
 
 
-    return render(request, "defect_form.html", context)
+class editDefect(View):
+    @method_decorator(login_required)
+    def get(self, request, pk):
+        project = Project.objects.get(pk=pk)
+        instance = Defect.objects.get(pk=pk)
+        form = DefectForm(request.POST or None, instance=instance)
 
-@login_required
-def editDefect(request, pk):
-    instance = Defect.objects.get(pk=pk)
-    form = DefectForm(request.POST or None, instance=instance)
-    if form.is_valid():
-        form.save()
-        return redirect(reverse(defect_view))
-    return render(request, 'editDefect.html', {'form': form})
+        return render(request, 'editDefect.html', {'form': form, 'project': project})
+    @method_decorator(login_required)
+    def post(self, request, pk):
+        instance = Defect.objects.get(pk=pk)
+        form = DefectForm(request.POST or None, instance=instance)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.save()
+            
+        return HttpResponseRedirect("/view_defect/" + str(pk) + "/")
+    
 
 def report_view(request, reporttype, pk):
     reporttypestr = str(reporttype)
     if reporttypestr == 'project':
         # project report
         pj = Project.objects.get(pk=pk)
-        rt = get_report(reporttype, pj)
-        (ds, inject_iteration, resolve_iteration, inject_num, resolve_num, escape_arr, yield_arr) = get_yield(pj)
+#        rt = get_report(reporttype, pj)
+        (table, yield_arr) = get_yield(pj)
         return render(request, "project_report.html", {
-            'report': rt, 
-            'ds': ds, 
-            'inject_iteration': inject_iteration,
-            'resolve_iteration': resolve_iteration,
-            'inject_num': inject_num,
-            'resolve_num': resolve_num,
-            'escape_arr': escape_arr,
-            'yield_arr': yield_arr,
+            'table': table,
+            'yield_arr': yield_arr
         })
     elif reporttypestr == 'phase':
         # phase report
@@ -300,5 +328,97 @@ def report_view(request, reporttype, pk):
         it = Iteration.objects.get(pk=pk)
         rt = get_report(reporttype, ph)
         return render(request, "iteration_report.html", {'report': rt})
+class create_user(View):
+    form = UserForm
+    initial = {'key': 'value'}
+    template_name = 'create_user.html'
+    def get(self, request, *args, **kwargs):
+        form = self.form()
+        return render(request, self.template_name, {'form': form})
+    def post(self, request, *args, **kwargs):
+        form = self.form(request.POST)
+        if form.is_valid():
+            user = form.save()
+            group = Group.objects.get(name=form.cleaned_data.get("groups")[0])
+            user.groups.add(group)
+            print(form.cleaned_data)
+            return HttpResponseRedirect('/')
+        return render(request, self.template_name, {'form': form})
 
+class edit_user(View):
+    @method_decorator(login_required)
+    def get(self, request, pk):
+        user= User.objects.get(pk=pk)
+        form=UserForm(instance=user)
+        context={'form':form}
+        template = 'edit_user.html'
+        return render(request, template, context)
+    @method_decorator(login_required)
+    def post(self, request, pk):
+        user= User.objects.get(pk=pk)
+        form=UserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse(project_view))
+        context={'form':form}
+        template = 'edit_user.html'
+        return render(request, template, context)
+
+@login_required
+def staff_view(request):
+    ManagerList = Group.objects.get(name="Manager").user_set.all()
+    HRList = Group.objects.get(name="HR").user_set.all()
+    DeveloperList = Group.objects.get(name="Developer").user_set.all()
+    context={'ManagerList':ManagerList, 
+              'HRList':HRList,
+              'DeveloperList':DeveloperList  }
+    return render(request, 'staff_view.html', context)
+
+@login_required
+def switch_project(request, pk):
+    project = Project.objects.get(pk=pk)
+    add_action_log(request, 'exitproj', project)
+    return HttpResponseRedirect('/project/')
+
+@login_required
+def api_call(request, command, pk):
+    project = Project.objects.get(pk=pk)
+    success_page = HttpResponse("OK", content_type = "text/plain", status = 200)
+    if command == 'pause_timer':
+        add_action_log(request, 'pausework', project)
+        return success_page
+    elif command == 'resume_timer':
+        add_action_log(request, 'resumework', project)
+        return success_page
+    else:
+        return None
+
+class editProject(View):
+    @method_decorator(login_required)
+    def get(self, request, pk):
+        instance = Project.objects.get(pk=pk)
+        form = ProjectForm(request.POST, instance=instance)
+        context={'form':form}
+        template = 'editProject.html'
+        return render(request, template, context)
+    @method_decorator(login_required)
+    def post(self, request, pk):
+        instance = Project.objects.get(pk=pk)
+        form=ProjectForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            # return redirect(reverse(project_view))
+            return HttpResponseRedirect('/project/')
+        context={'form':form}
+        template = 'editProject.html'
+        return render(request, template, context)
+
+# @login_required
+# def editProject(request, pk):
+#     instance = Project.objects.get(pk=pk)
+#     form = ProjectForm(request.POST or None, instance=instance)
+#     if form.is_valid():
+#         form.save()
+#         return redirect(reverse(project_view))
+#     return render(request, 'editProject.html', {'form': form})
 

@@ -12,18 +12,7 @@ $(document).ready(function(){
 		<div class="col-md-6"><h1>Defect Removal Mode</h1></div>
 		<div class="col-md-2"></div>
 		<div class="col-md-2">
-			<div class="dropdown">
-				<button class="btn btn-default dropdown-toggle" type="button" id="projectMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					Switch Project
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-					<li><a href="#">Project_1</a></li>
-					<li><a href="#">Project 2</a></li>
-					<li><a href="#">Project 3</a></li>
-					<li><a href="#">Project 4</a></li>
-				</ul>
-			</div>
+			<a href="/switch_project/{{ project.id }}/"><button type="button" class="btn btn-default">Switch Project</button></a>
 		</div>
 		<div class="col-md-2">
 			<div class="dropdown">
@@ -32,8 +21,8 @@ $(document).ready(function(){
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-					<li><a href="/view/defect/">Management Mode</a></li>
-					<li><a href="/developmentMode/">Development Mode</a></li>
+					<li><a href="/view_defect/{{ project.id }}/">Management Mode</a></li>
+					<li><a href="/developmentMode/{{ project.id }}/">Development Mode</a></li>
 				</ul>
 			</div>
 		</div>

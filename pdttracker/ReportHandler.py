@@ -1,5 +1,6 @@
 from django.db.models import Count, F
 from pdttracker.models import *
+from pdttracker.ReportPolicy import *
 
 def add_iteration_report(iteration):
 	"""Add iteration report when an iteration is created"""
@@ -343,11 +344,11 @@ def get_yield(project):
 				out.append('')
 		out.append(str(cumulative_resolve_num[resolve_iteration[i]]))
 		table_output.append(out)
-	out2 = [['Escapes'] + [str(x) for x in escape_arr] + [str(cumulative_escape)]]
+	out2 = ['Escapes'] + [str(x) for x in escape_arr] + [str(cumulative_escape)]
 	table_output.append(out2)
 	num_list = [v for v in cumulative_inject_num.values()]
 	sum_list = str(sum(num_list))
-	out3 = [['Total'] + [str(v) for v in cumulative_inject_num.values()] + [sum_list]]
+	out3 = ['Total'] + [str(v) for v in cumulative_inject_num.values()] + [sum_list]
 	table_output.append(out3)
 
 	# return (ds, inject_iteration, resolve_iteration, inject_num, resolve_num, escape_arr, yield_arr)

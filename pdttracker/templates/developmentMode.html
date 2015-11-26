@@ -10,18 +10,7 @@
 		<div class="col-md-6"><h1>Development Mode</h1></div>
 		<div class="col-md-2"></div>
 		<div class="col-md-2">
-			<div class="dropdown">
-				<button class="btn btn-default dropdown-toggle" type="button" id="projectMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					Switch Project
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-					<li><a href="#">Project_1</a></li>
-					<li><a href="#">Project 2</a></li>
-					<li><a href="#">Project 3</a></li>
-					<li><a href="#">Project 4</a></li>
-				</ul>
-			</div>
+			<a href="/switch_project/{{ project.id }}/"><button type="button" class="btn btn-default">Switch Project</button></a>
 		</div>
 		<div class="col-md-2">
 			<div class="dropdown">
@@ -30,8 +19,8 @@
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-					<li><a href="/defect_form/">Defect Removal Mode</a></li>
-					<li><a href="/view/defect/">Management Mode</a></li>
+					<li><a href="/defect_form/{{ project.id }}/">Defect Removal Mode</a></li>
+					<li><a href="/view_defect/{{ project.id }}/">Management Mode</a></li>
 				</ul>
 			</div>
 		</div>
@@ -47,22 +36,31 @@
           <div class="modal-content">
             <div class="modal-header">
               <!--button type="button" class="close" data-dismiss="modal">&times;</button-->
-              <h4 class="modal-title">You are currently away. Press to Resume</h4>
+              
             </div>
-              <div class="modal-body">
-                <img src="/static/img/resume.png" id="resumeTimer" class="close" data-dismiss="modal" style="margin-top: 40px; margin-right: 150px;">
-                Current Time:  {{time}}
+              <div class="modal-body" style="text-align: center">
+                <h5 style="display: block; margin-left: auto; margin-right: auto;">You are currently away. Press to Resume</h5><br>
+                <div class="row center-block">
+                  <img src="/static/img/resume.png" id="resumeTimer" class="close" data-dismiss="modal" style="/* margin-top: 40px; */margin-right: 150px; display: block;">
+                </div>
+                <div class="row">
+                <p style="text-align: center">
+                  <h3>Current Time:</h3><br>
+                  <h1 style="position: relative; top: -30px; line-height: 60%"><b><span class='ct' ></span></b></h1>
+                </p>
+              </div>
               </div>
             <div class="modal-footer">
             </div>
           </div>
+        </div>
         </div>
       </div>
 
 			<!-- Trigger the modal with a button -->
 			
 		<h3 class="text-center">Current time</h3>
-			<h1 class="text-center">{{time}}</h1>
+		<h1 class="text-center"><b><span class="ct" ></b></span></h1>
 
 		
 

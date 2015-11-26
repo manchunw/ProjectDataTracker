@@ -15,17 +15,7 @@ $(document).ready(function(){
 		<div class="col-md-6"><h1>Management Mode</h1></div>
 		<div class="col-md-2"></div>
 		<div class="col-md-2">
-			<div class="dropdown">
-				<button class="btn btn-default dropdown-toggle" type="button" id="projectMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-					Switch Project
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-					{% for project in projects %}
-					<li><a href="#">{{project.project_title}}</a></li>
-					{% endfor %}
-				</ul>
-			</div>
+			<a href="/switch_project/{{ project.id }}/"><button type="button" class="btn btn-default">Switch Project</button></a>
 		</div>
 		<div class="col-md-2">
 			<div class="dropdown">
@@ -34,8 +24,8 @@ $(document).ready(function(){
 					<span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-					<li><a href="/defect_form/">Defect Removal Mode</a></li>
-					<li><a href="/developmentMode/">Development Mode</a></li>
+					<li><a href="/defect_form/{{ project.id }}/">Defect Removal Mode</a></li>
+					<li><a href="/developmentMode/{{ project.id }}/">Development Mode</a></li>
 				</ul>
 			</div>
 		</div>

@@ -12,6 +12,7 @@ from .forms import *
 import datetime
 from django.core.urlresolvers import reverse
 from .projectmemberhandler import *
+from pdttracker.GroupHandler import *
 
 def add_project(request,project_title, project_description,project_sloc,current_phase,current_iteration, assign_member):
 #    form = ProjectForm(request.POST or None)
@@ -76,9 +77,15 @@ def get_project(id):
 
 @login_required
 def get_project_list(request):
-    pm = ProjectMember.objects.filter(member=request.user)
-    project_list= Project.objects.filter(projectmember=pm)
-   
+    if in_group(request.user, "Administrator"):
+        project_list=   Project.objects.all()
+    elif in_group(request.user, "Manager"):
+        project_list=Project.objects.filter(in_charge_by=request.user)
+    elif in_group(request.user, "Developer"):
+        pm = ProjectMember.objects.filter(member=request.user)
+        project_list= Project.objects.filter(projectmember=pm)
+    else:
+        project_list = None
     return project_list
 
 

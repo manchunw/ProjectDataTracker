@@ -38,7 +38,7 @@ class Phase(models.Model):
 	phase_sloc = models.IntegerField(default=0)
 	in_project = models.ForeignKey('Project', blank=False, null=False)
 	# report must be created before phase can be created
-	phase_report = models.ForeignKey('\Report', blank=False, null=False)
+	phase_report = models.ForeignKey('Report', blank=False, null=False)
 	def __str__(self):
 		return self.phase_name
 
@@ -71,6 +71,7 @@ class Defect(models.Model):
 	recorded_in = models.ForeignKey('Project', blank=True, null=True)
 	iteration_injected = models.ForeignKey('Iteration', blank=True, null=True, related_name='iteration_injected')
 	iteration_resolved = models.ForeignKey('Iteration', blank=True, null=True, related_name='iteration_resolved')
+	defect_created_by = models.ForeignKey('ProjectMember', blank=True, null=True)
 	def __str__(self):
 		return self.defect_title
 
@@ -88,6 +89,8 @@ class Timer(models.Model):
 	num_hrs = models.FloatField(default=0)
 	mode = models.CharField(blank=False, null=False, default="devmode", max_length=10)
 	is_active = models.BooleanField(default=True)
+	timing_iteration = models.ForeignKey('Iteration', blank=True, null=True)
+	timer_created_by = models.ForeignKey('ProjectMember', blank=True, null=True)
 	def __str__(self):
 		return "%s %s in %s" % (self.timer_created_by.member.first_name, self.timer_created_by.member.last_name, self.timer_created_by.work_in.project_title)
 

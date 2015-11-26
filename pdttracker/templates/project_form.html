@@ -18,13 +18,13 @@
 	</div>
 
 <div class="row">
-	<div class="col-md-6">
+	<div class="col-md-12">
 		<form action="" method="post">{% csrf_token %}
 		    {{ form.as_p }}
 		    <input type="submit" value="Create" />
 		</form>
 	</div>
-	<div class="col-md-6">
+<!-- 	<div class="col-md-6">
 		<div class="panel panel-primary">
 			<div class="panel-heading">Assigned Developers</div>
   			<div class="panel-body">
@@ -41,6 +41,6 @@
   			</div>
 
 		</div>
-	</div>
+	</div> -->
 </div>
 {% endblock %}

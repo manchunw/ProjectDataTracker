@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% load render_table from django_tables2 %}
+
+{% block content %}
+
+<style>
+	a {
+		color: inherit;
+		background-color: inherit;
+	}
+</style>
+
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-2">
+			<a href="/welcomeAdmin/"><button class="btn btn-default">Back to Welcome Page</button></a>
+		</div>
+		<div class="col-md-8">
+		</div>
+		<div class="col-md-2">
+			<a href="/create_user/"><button class="btn btn-info">Create New User</button></a>
+		</div>
+	</div><br>
+	<div class="row">
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+				<div class="panel-heading">Managers</div><!--list of manager names-->
+				<div class="panel-body">
+					<ul class="list-group">
+						{% for manager in ManagerList %}
+						<li class="list-group-item"><a href="/edit_user/{{manager.pk}}">{{manager.username}}</a></li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+				<div class="panel-heading">Developers</div><!--list of developer names-->
+				<div class="panel-body">
+					<ul class="list-group">
+						{% for developer in DeveloperList %}
+						<li class="list-group-item"><a href="/edit_user/{{ developer.pk }}">{{developer.username}}</a></li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+				<div class="panel-heading">HR Staff</div><!--list of developer names-->
+				<div class="panel-body">
+					<ul class="list-group">
+						{% for staff in HRList %}
+						<li class="list-group-item"><a href="/edit_user/{{staff.pk}}">{{staff.username}}</a></li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</div>
+{% endblock %}

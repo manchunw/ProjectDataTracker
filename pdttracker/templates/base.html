@@ -17,7 +17,34 @@
 <script src="/static/js/bootstrap.min.js"></script>
 <script src="/static/js/scripts.js"></script>
 </head>
-<body>
+<style>
+  a button{
+    /*color: inherit !important;*/
+    text-decoration: none !important;
+  }
+</style>
+<script type="text/javascript"> 
+function display_c(){
+var refresh=1000; // Refresh rate in milli seconds
+mytime=setTimeout('display_ct()',refresh)
+}
+
+function display_ct() {
+var strcount
+var x = new Date()
+var x1=x.toString();// changing the display to UTC string
+// document.getElementById('ct').innerHTML = x1;
+
+var x = document.getElementsByClassName("ct");
+    var i;
+    for (i = 0; i < x.length; i++) {
+        x[i].innerHTML = x1;
+    }
+
+tt=display_c();
+}
+</script>
+<body onload="display_ct();">
   <header class="navbar navbar-default navbar-static-top" role="banner">
   <div class="container">
     <div class="navbar-header">
@@ -79,19 +106,27 @@
           <div class="modal-content">
             <div class="modal-header">
               <!--button type="button" class="close" data-dismiss="modal">&times;</button-->
-              <h4 class="modal-title">You are currently away. Press to Resume</h4>
+              
             </div>
-              <div class="modal-body">
-                <img src="/static/img/resume.png" id="resumeTimer" class="close" data-dismiss="modal" style="margin-top: 40px; margin-right: 150px;">
-                Current Time:  {{time}}
+              <div class="modal-body" style="text-align: center">
+                <h5 style="display: block; margin-left: auto; margin-right: auto;">You are currently away. Press to Resume</h5><br>
+                <div class="row center-block">
+                  <img src="/static/img/resume.png" id="resumeTimer" class="close" data-dismiss="modal" style="/* margin-top: 40px; */margin-right: 150px; display: block;">
+                </div>
+                <div class="row">
+                <p style="text-align: center">
+                  <h3>Current Time:</h3><br>
+                  <h1 style="position: relative; top: -30px; line-height: 60%"><b><span class='ct' ></span></b></h1>
+                </p>
+              </div>
               </div>
             <div class="modal-footer">
             </div>
           </div>
         </div>
       </div>
-      <h6 class="text-center">Current time</h3>
-      <h5 class="text-center">{{time}}</h1>
+      <h6 class="text-center">Current time</h6>
+      <h5 class="text-center"><span class='ct' ></span></h5>
   </div>
   </div>
 </div>

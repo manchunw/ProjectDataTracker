@@ -25,40 +25,39 @@ $(document).ready(function(){
   	$('ul.pagination').addClass('col-xs-12');
   }
 
-  $('#pauseTimer').click(function () {
-	    console.log("pause_time is called!") // sanity check
-	    $.ajax({
-	        url : "/api/command/", // the endpoint
-	        type : "POST", // http method
-	        //data : { timer : pause }, // data sent with the post request
+  	if ($('#pauseTimer').length > 0 || $('#resumeTimer').length > 0) {
+  		var url = document.URL;
+  		var pattern = url.match(/http:\/\/([a-zA-Z_0-9:\.])+(\/([a-zA-Z0-9_]+))?\/([a-zA-Z0-9_]+)\/([0-9]+)/);
+  		var projectId = pattern[5];
+	  	$('#pauseTimer').click(function () {
+		    $.ajax({
+		        url : "/api/pause_timer/" + projectId + "/", // the endpoint
+		        type : "GET", // http method
+		        //data : { timer : pause }, // data sent with the post request
 
-	        // handle a successful response
-	        success : function(json) {
-	            //$('#post-text').val(''); // remove the value from the input
-	            console.log(json); // log the returned json to the console
-	            //console.log("success"); // another sanity check
-	        },
+		        // handle a successful response
+		        success : function(json) {
+		            console.log(json);
+		        },
 
-	        // handle a non-successful response
-	        error : function(xhr,errmsg,err) {}
-	    });
-	});
-	$('#resumeTimer').click(function () {
-	    console.log("resume_time is called!") // sanity check
-	    $.ajax({
-	        url : "/api/command/", // the endpoint
-	        type : "POST", // http method
-	        //data : { timer : resume }, // data sent with the post request
+		        // handle a non-successful response
+		        error : function(xhr,errmsg,err) {}
+		    });
+		});
+		$('#resumeTimer').click(function () {
+		    $.ajax({
+		        url : "/api/resume_timer/" + projectId + "/", // the endpoint
+		        type : "GET", // http method
+		        //data : { timer : resume }, // data sent with the post request
 
-	        // handle a successful response
-	        success : function(json) {
-	            //$('#post-text').val(''); // remove the value from the input
-	            console.log(json); // log the returned json to the console
-	            //console.log("success"); // another sanity check
-	        },
+		        // handle a successful response
+		        success : function(json) {
+		            console.log(json);
+		        },
 
-	        // handle a non-successful response
-	        error : function(xhr,errmsg,err) {}
-	    });
-	});
+		        // handle a non-successful response
+		        error : function(xhr,errmsg,err) {}
+		    });
+		});
+	}
 });

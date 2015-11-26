@@ -3,11 +3,21 @@ from django.contrib.auth.models import User, Group
 from pdttracker.models import *
 from django_tables2.utils import A
 
-class ProjectTable(tables.Table):
+class ManagerProjectTable(tables.Table):
     class Meta:
         model = Project
         attrs = {"class": "table"}
+    def render_edit(self):
+        return 'edit'
+    edit = tables.LinkColumn('editProject', args=[A('pk')], orderable=False, empty_values=())
+    foo = tables.TemplateColumn('Edit {{ Project.id }}' )
     project_title = tables.LinkColumn('editProject', args=[A('pk')])
+
+class DeveloperProjectTable(tables.Table):
+    class Meta:
+        model = Project
+        attrs = {"class": "table"}
+    project_title = tables.LinkColumn('selectMode', args=[A('pk')])
 
 class IterationTable(tables.Table):
     class Meta:

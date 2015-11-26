@@ -15,7 +15,10 @@
 		<div class="col-md-4"></div>
 
 		<div class="col-md-2">
-			<button type="button" class="btn btn-warning"><a href="/project_form">Create New Project</a></button>
+			{% if request.user.groups.all.0.name == 'Manager' %}
+				<a href="/project_form/"><button type="button" class="btn btn-warning">Create New Project</button></a>
+			{% endif %}
+			
 			
 		</div>
 	</div>
