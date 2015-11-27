@@ -38,18 +38,18 @@ def end_timer(request, now_time, last_time, mode, project=None, iteration=None):
 
 def switch_iteration(pj, old_iteration):
 	if Timer.objects.filter(created_for=pj, timing_iteration=old_iteration, mode='devmode').exists():
-		devmodeset = Timer.objects.get(created_for=pj, timing_iteration=old_iteration, mode='devmode').aggregate(Sum('num_hrs'))
+		devmodeset = Timer.objects.filter(created_for=pj, timing_iteration=old_iteration, mode='devmode').aggregate(Sum('num_hrs'))
 		devmode = devmodeset['num_hrs__sum']
 	else:
 		devmode = 0
 	if Timer.objects.filter(created_for=pj, timing_iteration=old_iteration, mode='mgmtmode').exists():
-		mgmtmodeset = Timer.objects.get(created_for=pj, timing_iteration=old_iteration, mode='mgmtmode').aggregate(Sum('num_hrs'))
+		mgmtmodeset = Timer.objects.filter(created_for=pj, timing_iteration=old_iteration, mode='mgmtmode').aggregate(Sum('num_hrs'))
 		mgmtmode = mgmtmodeset['num_hrs__sum']
 	else:
 		mgmtmode = 0
 	if Timer.objects.filter(created_for=pj, timing_iteration=old_iteration, mode='defectmode').exists():
-		defectmodeset = Timer.objects.get(created_for=pj, timing_iteration=old_iteration, mode='defectmode').aggregate(Sum('num_hrs'))
+		defectmodeset = Timer.objects.filter(created_for=pj, timing_iteration=old_iteration, mode='defectmode').aggregate(Sum('num_hrs'))
 		defectmode = defectmodeset['num_hrs__sum']
 	else:
 		defectmode = 0
-	add_to_person_hrs(old_iteration, devmode.num_hrs, defectmode.num_hrs, mgmtmode.num_hrs)
+	add_to_person_hrs(old_iteration, devmode, defectmode, mgmtmode)

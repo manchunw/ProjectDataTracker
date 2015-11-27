@@ -7,10 +7,8 @@ class ManagerProjectTable(tables.Table):
     class Meta:
         model = Project
         attrs = {"class": "table"}
-    def render_edit(self):
-        return 'edit'
-    edit = tables.LinkColumn('editProject', args=[A('pk')], orderable=False, empty_values=())
-    foo = tables.TemplateColumn('Edit {{ Project.id }}' )
+    Edit = tables.TemplateColumn('<a href="/modifyProject/{{record.id}}">Edit</a>' , orderable=False)
+    View_Defects = tables.TemplateColumn('<a href="/view_defect/{{record.id}}">View Defects</a>' , orderable=False)
     project_title = tables.LinkColumn('editProject', args=[A('pk')])
 
 class DeveloperProjectTable(tables.Table):

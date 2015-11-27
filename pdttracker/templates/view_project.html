@@ -17,6 +17,8 @@
 		<div class="col-md-2">
 			{% if request.user.groups.all.0.name == 'Manager' %}
 				<a href="/project_form/"><button type="button" class="btn btn-warning">Create New Project</button></a>
+			{% elif request.user.groups.all.0.name == 'Administrator' %}
+				<a href="/welcomeAdmin/"><button type="button" class="btn btn-warning">Back to Welcome Page</button></a>
 			{% endif %}
 			
 			
@@ -24,10 +26,8 @@
 	</div>
 
 	<div class="row">
-		<div class="col-md-1"></div>
-		<div class="col-md-10">
+		<div class="col-md-12">
 		{% render_table project %}
 		</div>
-		<div class="col-md-1"></div>
 	</div>
 {% endblock %}

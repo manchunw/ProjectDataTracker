@@ -1,6 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+{% if request.user.groups.all.0.name == 'Administrator' %}
+<a href="/staff_view/"><button type="button" class="btn btn-info">Back to List of Staff</button></a>
+{% else %}
+<a href="/welcomeHR/"><button type="button" class="btn btn-info">Back to Welcome Page</button></a>
+{% endif %}
+
+<br>
 	
 <form action="" method="post">{% csrf_token %}
     {{ form.as_p }}

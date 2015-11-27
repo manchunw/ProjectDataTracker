@@ -2,6 +2,7 @@ from django.utils import timezone
 from django.db.models import Q
 from pdttracker.models import *
 from pdttracker.TimerHandler import start_timer, end_timer, switch_iteration
+from pdttracker.ReportHandler import *
 
 def add_action_log(request, logtype, project=None, phase=None, iteration=None, defect=None, user=None):
 	lt = ActionLogDescription.objects.get(short_title=logtype)
@@ -30,6 +31,10 @@ def add_action_log(request, logtype, project=None, phase=None, iteration=None, d
 		end_timer(request, time, get_latest_timer_start(request), get_current_mode(request), project, iteration)
 	elif logtype == 'logout':
 		end_timer(request, time, get_latest_timer_start(request), get_current_mode(request), project, iteration)
+	elif logtype == 'adddefect':
+		df = Defect.objects.get(pk=defect.pk)
+		add_defect_update(df.iteration_injected)
+		remove_defect_update(df.iteration_resolved)
 	actionLogDesc = ActionLog.objects.create(
 		action_log_created_by = user,
 		action_log_description = lt,

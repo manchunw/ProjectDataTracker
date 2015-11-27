@@ -3,7 +3,7 @@
 {% block content %}
 
 <!-- Form Name -->
-<legend>{{ title }}</legend>
+<legend><h1>{{title}}</h1></legend>
 
 {% if error_message %}
 <div class="panel panel-danger">
@@ -31,7 +31,7 @@
         {{ field }}
         <span class="help-block">{{ field.errors }}</span>
       </div>
-      <div class="col-md-4"><span class="help-link">help</span></div>
+      <!--div class="col-md-4"><span class="help-link">help</span></div-->
     </div>
         
     </div>

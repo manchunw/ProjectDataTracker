@@ -11,9 +11,11 @@ class ProjectForm(forms.ModelForm):
     DeveloperList = Group.objects.get(name="Developer").user_set.all()
         
     assign_developer=forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple,queryset=DeveloperList,)
+    phase_names=forms.CharField(widget=forms.Textarea)
+    iteration_names=forms.CharField(widget=forms.Textarea)
     class Meta:
         model = Project
-        fields = ['project_title', 'project_sloc','project_description','current_phase', 'current_iteration', 'assign_developer']
+        fields = ['project_title', 'project_sloc','project_description','current_phase', 'current_iteration', 'assign_developer', 'phase_names', 'iteration_names']
 
 class PhaseForm(forms.ModelForm):
     class Meta:

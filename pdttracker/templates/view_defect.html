@@ -10,7 +10,7 @@ $(document).ready(function(){
 	x.style.display = "block";
 });
 </script>
-
+	{% if request.user.groups.all.0.name == 'Developer' %}
 	<div class="row"> <!--header and switch project button-->
 		<div class="col-md-6"><h1>Management Mode</h1></div>
 		<div class="col-md-2"></div>
@@ -30,6 +30,15 @@ $(document).ready(function(){
 			</div>
 		</div>
 	</div>
+	{% else %}
+	<div class="row"> <!--header and switch project button-->
+		<div class="col-md-6"><h1>Defect List</h1></div>
+		<div class="col-md-4"></div>
+		<div class="col-md-2">
+			<a href="/project/"><button type="button" class="btn btn-default">Back to Project List</button></a>
+		</div>
+	</div>
+	{% endif %}
 
 	<div class="col-md-1"></div>
 	<div class="col-md-10">

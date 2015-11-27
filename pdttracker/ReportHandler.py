@@ -1,13 +1,13 @@
-from django.db.models import Count, F
+from django.db.models import Count, F, Q
 from pdttracker.models import *
 from pdttracker.ReportPolicy import *
 
 def add_iteration_report(iteration):
 	"""Add iteration report when an iteration is created"""
-	title = iteration.iteration_title + get_report_suffix()
+	title = iteration.iteration_name + get_report_suffix()
 	i = Iteration.objects.get(pk=iteration.pk)
 	current_phase = Phase.objects.filter(iteration = i)[:1].get()
-	# dsloc = 0
+	dsloc = 0
 	if i.iteration_sequence == 1:
 		# if the iteration is the first one, get the previous phase
 		if current_phase.phase_sequence == 1:
@@ -16,38 +16,43 @@ def add_iteration_report(iteration):
 		else:
 			# get the dsloc of the current phase
 			current_phase_report = Report.objects.filter(phase = current_phase)[:1].get()
-			dsloc = current_phase_report.dsloc
+			dsloc = current_phase_report.delivered_sloc
 	else:
 		# get the dsloc of the previous iteration
-		prev_i = Iteration.get_previous_iteration(iteration)
-		dsloc = prev_i.dsloc
+		prev_i = get_previous_iteration(iteration)
+		if prev_i is not None:
+			dsloc = prev_i.iteration_sloc
 	t = str(title)
 	r = Report.objects.create(report_title=t, delivered_sloc=dsloc)
-	obj = Report.objects.get(title__exact=t)
+	Iteration.objects.filter(pk=iteration.pk).update(iteration_report=r)
+	obj = Report.objects.get(pk=r.pk)
 	return obj
 
 def add_phase_report(phase):
 	"""Add phase report when a phase is created"""
-	title = iteration.phase_title + get_report_suffix()
+	title = phase.phase_name + get_report_suffix()
 	p = Phase.objects.get(pk=phase.pk)
+	dsloc = 0
 	if p.phase_sequence == 1:
 		dsloc = 0
 	else:
-		# get the dsloc of the previous iteration
-		prev_p = Phase.get_previous_phase(iteration)
-		dsloc = prev_p.dsloc
+		# get the dsloc of the previous phase
+		prev_p = get_previous_phase(phase)
+		if prev_p is not None:
+			dsloc = prev_p.dsloc
 	t = str(title)
-	r = Report(report_title=t, dsloc=dsloc)
+	r = Report(report_title=t, delivered_sloc=dsloc)
 	r.save()
-	obj = Report.objects.get(title__exact=t)
+	Phase.objects.filter(pk=phase.pk).update(phase_report=r)
+	obj = Report.objects.get(pk=r.pk)
 	return obj
 
 def add_project_report(project):
 	"""Add project report when a project is created"""
 	title = project.project_title + get_report_suffix()
-	r = Report(report_title=title, dsloc=0)
+	r = Report(report_title=title, delivered_sloc=0)
 	r.save()
-	obj = Report.objects.get(title__exact=title)
+	obj = Report.objects.get(pk=r.pk)
 	return obj
 
 def add_to_delivered_sloc(iteration, sloc):
@@ -62,29 +67,6 @@ def add_to_delivered_sloc(iteration, sloc):
 	Report.objects.filter(project = pj).update(
 		delivered_sloc = F('delivered_sloc') + sloc,
 	)
-	# """Add to delivered sloc after an iteration is complete"""
-	# # update iteration report dsloc
-	# i = Iteration.objects.get(pk=iteration.pk)
-	# r = Report.objects.filter(iteration = iteration)[:1].get()
-	# old_value = i.sloc
-	# new_value = r.delivered_sloc + sloc - old_value
-	# new_dsloc_per_person_mths = new_value / r.person_mths
-	# new_defect_density = r.defects_injected / new_value / 1000
-	# r.update(delivered_sloc=new_value, delivered_sloc_per_person_mths=new_dsloc_per_person_mths, defect_density_per_ksloc=new_defect_density)
-	# # update phase report sloc
-	# ph = Phase.objects.filter(iteration = iteration)[:1].get()
-	# ph_r = Report.objects.filter(phase = ph)[:1].get()
-	# new_ph_value = ph_r.delivered_sloc + new_value - old_value
-	# new_ph_dsloc_per_person_mths = new_ph_value / ph_r.person_mths
-	# new_ph_defect_density = ph_r.defects_injected / new_ph_value / 1000
-	# ph_r.update(delivered_sloc=new_ph_value, delivered_sloc_per_person_mths=new_ph_dsloc_per_person_mths, defect_density_per_ksloc=new_ph_defect_density)
-	# # update project report sloc
-	# pj = Project.objects.filter(phase = ph)[:1].get()
-	# pj_r = Report.objects.filter(project = pj)[:1].get()
-	# new_pj_value = pj_r.delivered_sloc + new_value - old_value
-	# new_pj_dsloc_per_person_mths = new_pj_value / pj_r.person_mths
-	# new_pj_defect_density = pj_r.defects_injected / new_pj_value / 1000
-	# pj_r.update(delivered_sloc=new_pj_value, delivered_sloc_per_person_mths=new_pj_dsloc_per_person_mths, defect_density_per_ksloc=new_pj_defect_density)
 
 def add_to_person_hrs(iteration, ph_devmode, ph_defectmode, ph_mgmtmode):
 	"""Add to person hours after an iteration is complete"""
@@ -106,94 +88,12 @@ def add_to_person_hrs(iteration, ph_devmode, ph_defectmode, ph_mgmtmode):
 		person_hrs_devmode = F('person_hrs_devmode') + ph_devmode,
 	)
 
-	# # update iteration report person hours
-	# r = Report.objects.filter(iteration = iteration)[:1].get()
-	# old_phrs_dev = r.person_hrs_devmode
-	# new_phrs_dev = old_phrs_dev + ph_devmode
-	# old_phrs_def = r.person_hrs_defectmode
-	# new_phrs_def = old_phrs_def + ph_defectmode
-	# old_phrs_mgt = r.person_hrs_mgmtmode
-	# new_phrs_mgt = old_phrs_mgt + ph_mgmtmode
-	# old_value = old_phrs_dev + old_phrs_def + old_phrs_mgt
-	# new_value = new_phrs_dev + new_phrs_def + new_phrs_mgt
-	# new_person_mths = new_value * get_person_mth_ratio()
-	# new_dsloc_per_person_mths = r.delivered_sloc / new_person_mths
-	# new_inject_rate = r.defects_injected / new_phrs_dev
-	# new_removal_rate = r.defects_removed / new_phrs_def
-	# r.update(
-	# 	person_hrs_devmode=new_phrs_dev,
-	# 	person_hrs_mgmtmode=new_phrs_mgt,
-	# 	person_hrs_defectmode=new_phrs_def, 
-	# 	delivered_sloc_per_person_mths=new_dsloc_per_person_mths, 
-	# 	person_mths=new_person_mths, 
-	# 	injection_rate_per_person_hrs=new_inject_rate, 
-	# 	removal_rate_per_person_hrs=new_removal_rate,
-	# )
-	# # update phase report person hours
-	# ph = Phase.objects.filter(iteration = iteration)[:1].get()
-	# ph_r = Report.objects.filter(phase = ph)[:1].get()
-	# new_ph_phrs_dev = ph_r.person_hrs_devmode + new_phrs_dev
-	# new_ph_phrs_mgt = ph_r.person_hrs_mgmtmode + new_phrs_mgt
-	# new_ph_phrs_def = ph_r.person_hrs_defectmode + new_phrs_def
-	# new_ph_value = new_value + ph_r.person_hrs_defectmode + ph_r.person_hrs_mgmtmode + ph_r.person_hrs_devmode
-	# new_person_mths = new_ph_value * get_person_mth_ratio()
-	# new_dsloc_per_person_mths = ph_r.delivered_sloc / new_ph_person_mths
-	# new_inject_rate = ph_r.defects_injected / new_ph_phrs_dev
-	# new_removal_rate = ph_r.defects_removed / new_ph_phrs_def
-	# ph_r.update(
-	# 	person_hrs_devmode=new_ph_phrs_dev,
-	# 	person_hrs_mgmtmode=new_ph_phrs_mgt,
-	# 	person_hrs_defectmode=new_ph_phrs_def, 
-	# 	delivered_sloc_per_person_mths=new_dsloc_per_person_mths, 
-	# 	person_mths=new_person_mths, 
-	# 	injection_rate_per_person_hrs=new_inject_rate, 
-	# 	removal_rate_per_person_hrs=new_removal_rate,
-	# )
-	# # update project report person hours
-	# pj = Project.objects.filter(phase = ph)[:1].get()
-	# pj_r = Report.objects.filter(project = pj)[:1].get()
-	# new_pj_phrs_dev = pj_r.person_hrs_devmode + new_phrs_dev
-	# new_pj_phrs_mgt = pj_r.person_hrs_mgmtmode + new_phrs_mgt
-	# new_pj_phrs_def = pj_r.person_hrs_defectmode + new_phrs_def
-	# new_pj_value = new_value + pj_r.person_hrs_defectmode + pj_r.person_hrs_mgmtmode + pj_r.person_hrs_devmode
-	# new_person_mths = new_pj_value * get_person_mth_ratio()
-	# new_dsloc_per_person_mths = pj_r.delivered_sloc / new_pj_person_mths
-	# new_inject_rate = pj_r.defects_injected / new_pj_phrs_dev
-	# new_removal_rate = pj_r.defects_removed / new_pj_phrs_def
-	# pj_r.update(
-	# 	person_hrs_devmode=new_pj_phrs_dev,
-	# 	person_hrs_mgmtmode=new_pj_phrs_mgt,
-	# 	person_hrs_defectmode=new_pj_phrs_def, 
-	# 	delivered_sloc_per_person_mths=new_dsloc_per_person_mths, 
-	# 	person_mths=new_person_mths, 
-	# 	injection_rate_per_person_hrs=new_inject_rate, 
-	# 	removal_rate_per_person_hrs=new_removal_rate,
-	# )
-
 def add_defect_update(iteration):
 	Report.objects.filter(iteration = iteration).update(defects_injected=F('defects_injected')+1)
 	ph = Phase.objects.filter(iteration = iteration)[:1].get()
 	Report.objects.filter(phase = ph).update(defects_injected=F('defects_injected')+1)
 	pj = Project.objects.filter(phase = ph)[:1].get()
 	Report.objects.filter(project = pj).update(defects_injected=F('defects_injected')+1)
-	# """Update defect counter after a defect is added"""
-	# r = Report.objects.filter(iteration = iteration)[:1].get()
-	# new_value = r.defects_injected + 1
-	# new_inject_rate = new_value / r.person_hrs_devmode
-	# new_defect_density = new_value / r.delivered_sloc / 1000
-	# r.update(defects_injected=new_value, injection_rate_per_person_hrs=new_inject_rate, defect_density_per_ksloc=new_defect_density)
-	# ph = Phase.objects.filter(iteration = iteration)[:1].get()
-	# ph_r = Report.objects.filter(phase = ph)[:1].get()
-	# new_ph_value = ph_r.defects_injected + 1
-	# new_ph_inject_rate = new_ph_value / ph_r.person_hrs_devmode
-	# new_ph_defect_density = new_ph_value / ph_r.delivered_sloc / 1000
-	# ph_r.update(defects_injected=new_ph_value, injection_rate_per_person_hrs=new_ph_inject_rate, defect_density_per_ksloc=new_ph_defect_density)
-	# pj = Project.objects.filter(phase = ph)[:1].get()
-	# pj_r = Report.objects.filter(project = pj)[:1].get()
-	# new_pj_value = pj_r.defects_injected + 1
-	# new_pj_inject_rate = new_pj_value / pj_r.person_hrs_devmode
-	# new_pj_defect_density = new_pj_value / pj_r.delivered_sloc / 1000
-	# pj_r.update(defects_injected=new_pj_value, injection_rate_per_person_hrs=new_pj_inject_rate, defect_density_per_ksloc=new_pj_defect_density)
 	
 def remove_defect_update(iteration):
 	Report.objects.filter(iteration = iteration).update(defects_removed=F('defects_removed')+1)
@@ -201,24 +101,6 @@ def remove_defect_update(iteration):
 	Report.objects.filter(phase = ph).update(defects_removed=F('defects_removed')+1)
 	pj = Project.objects.filter(phase = ph)[:1].get()
 	Report.objects.filter(project = pj).update(defects_removed=F('defects_removed')+1)
-	# """Update defect counter after a defect is added"""
-	# r = Report.objects.filter(iteration = iteration)[:1].get()
-	# new_value = r.defects_removed + 1
-	# new_removal_rate = new_value / r.person_hrs_defectmode
-	# new_defect_density = new_value / r.delivered_sloc / 1000
-	# r.update(defects_injected=new_value, injection_rate_per_person_hrs=new_inject_rate, defect_density_per_ksloc=new_defect_density)
-	# ph = Phase.objects.filter(iteration = iteration)[:1].get()
-	# ph_r = Report.objects.filter(phase = ph)[:1].get()
-	# new_ph_value = ph_r.defects_injected + 1
-	# new_ph_inject_rate = new_ph_value / ph_r.person_hrs_defectmode
-	# new_ph_defect_density = new_ph_value / ph_r.delivered_sloc / 1000
-	# ph_r.update(defects_injected=new_ph_value, injection_rate_per_person_hrs=new_ph_inject_rate, defect_density_per_ksloc=new_ph_defect_density)
-	# pj = Project.objects.filter(phase = ph)[:1].get()
-	# pj_r = Report.objects.filter(project = pj)[:1].get()
-	# new_pj_value = pj_r.defects_injected + 1
-	# new_pj_inject_rate = new_pj_value / pj_r.person_hrs_defectmode
-	# new_pj_defect_density = new_pj_value / pj_r.delivered_sloc / 1000
-	# pj_r.update(defects_injected=new_pj_value, injection_rate_per_person_hrs=new_pj_inject_rate, defect_density_per_ksloc=new_pj_defect_density)
 
 def generate_iteration_report(iteration):
 	ph = Phase.objects.filter(iteration = iteration)[:1].get()
@@ -299,7 +181,7 @@ def get_yield(project):
 		inject_iteration += [str(c['iteration_injected__iteration_name'])]
 	for r in rs:
 		# populate total resolve numbers on the right of the table
-		resolve_num[str(r['iteration_resolved__iteration_name'])] += int(r['num'])
+		resolve_num[str(r['iteration_resolved__iteration_name'])] = int(r['num'])
 		resolve_iteration += [str(r['iteration_resolved__iteration_name'])]
 	for d in ds:
 		# populate the last row of defect resolved, for escape calculation
@@ -327,9 +209,9 @@ def get_yield(project):
 	yield_arr = []
 	for i in range(len(inject_iteration)):
 		if i == 0:
-			yield_arr.append(resolve_num[resolve_iteration[i]] / cumulative_inject_num[inject_iteration[i]])
+			yield_arr.append(format(resolve_num[resolve_iteration[i]] / cumulative_inject_num[inject_iteration[i]] * 100,'.2f'))
 		else:
-			yield_arr.append(resolve_num[resolve_iteration[i]] / (cumulative_inject_num[inject_iteration[i]] - cumulative_resolve_num[resolve_iteration[i-1]]))
+			yield_arr.append(format(resolve_num[resolve_iteration[i]] / (cumulative_inject_num[inject_iteration[i]] - cumulative_resolve_num[resolve_iteration[i-1]]) * 100, '.2f'))
 	table_output = [[''] + inject_iteration + ['Total']]
 	# populate table-convenient output
 	for i in range(len(resolve_iteration)):
@@ -342,14 +224,40 @@ def get_yield(project):
 					out.append(str(d['num']))
 			if check == False:
 				out.append('')
-		out.append(str(cumulative_resolve_num[resolve_iteration[i]]))
+		out.append(str(resolve_num[resolve_iteration[i]]))
 		table_output.append(out)
 	out2 = ['Escapes'] + [str(x) for x in escape_arr] + [str(cumulative_escape)]
 	table_output.append(out2)
-	num_list = [v for v in cumulative_inject_num.values()]
+	num_list = [v for v in inject_num.values()]
 	sum_list = str(sum(num_list))
 	out3 = ['Total'] + [str(v) for v in cumulative_inject_num.values()] + [sum_list]
 	table_output.append(out3)
 
 	# return (ds, inject_iteration, resolve_iteration, inject_num, resolve_num, escape_arr, yield_arr)
 	return (table_output, yield_arr)
+
+
+def get_previous_phase(curr_phase):
+    prev_seq = curr_phase.phase_sequence - 1
+    if prev_seq == 0:
+        return None
+    else:
+        if Phase.objects.filter(Q(project=curr_phase.in_project) & Q(phase_sequence=prev_seq)).count() > 0:
+        	prev = Phase.objects.filter(project=curr_phase.in_project).get(phase_sequence=prev_seq)
+        else:
+        	return None
+   
+    return prev
+
+
+def get_previous_iteration(curr_iteration):
+    prev_seq = curr_iteration.iteration_sequence - 1
+    if prev_seq == 0:
+        return None
+    else:
+        if Phase.objects.filter(Q(project=curr_iteration.in_phase.in_project) & Q(phase_sequence=prev_seq)).count() > 0:
+            prev = Iteration.objects.filter(in_phase=curr_iteration.in_phase).get(iteration_sequence=prev_seq)
+        else:
+            return None
+   
+    return prev

@@ -30,6 +30,9 @@ $(document).ready(function(){
 
 <form action="" method="post">{% csrf_token %}
     {{ form.as_p }}
+    <input type="hidden" value="{{ project.id }}" name="recorded_in" id="id_recorded_in" />
+    <input type="hidden" value="{{ project.current_iteration.pk }}" name="defect_resolved" id="id_defect_resolved" />
+    <input type="hidden" value="{{ projectmember.id }}" name="defect_created_by" id="id_defect_created_by" />
     <input type="submit" value="Create" />
 </form>
 

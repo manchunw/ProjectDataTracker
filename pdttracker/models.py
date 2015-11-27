@@ -27,7 +27,7 @@ class Iteration(models.Model):
 	iteration_sloc = models.IntegerField(default=0)
 	in_phase = models.ForeignKey('Phase', blank=False, null=False)
 	# report must be created before iteration can be created
-	iteration_report = models.ForeignKey('Report', blank=False, null=False)
+	iteration_report = models.ForeignKey('Report', blank=True, null=True)
 	def __str__(self):
 		return self.iteration_name
 
@@ -38,7 +38,7 @@ class Phase(models.Model):
 	phase_sloc = models.IntegerField(default=0)
 	in_project = models.ForeignKey('Project', blank=False, null=False)
 	# report must be created before phase can be created
-	phase_report = models.ForeignKey('Report', blank=False, null=False)
+	phase_report = models.ForeignKey('Report', blank=True, null=True)
 	def __str__(self):
 		return self.phase_name
 

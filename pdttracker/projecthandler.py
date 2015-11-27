@@ -13,8 +13,11 @@ import datetime
 from django.core.urlresolvers import reverse
 from .projectmemberhandler import *
 from pdttracker.GroupHandler import *
+from pdttracker.ReportHandler import *
+from pdttracker.phasehandler import *
+from pdttracker.iterationhandler import *
 
-def add_project(request,project_title, project_description,project_sloc,current_phase,current_iteration, assign_member):
+def add_project(request,project_title, project_description,project_sloc,current_phase,current_iteration, assign_member, phase_names, iteration_names):
 #    form = ProjectForm(request.POST or None)
 #    context = {
 #        "form": form
@@ -30,20 +33,44 @@ def add_project(request,project_title, project_description,project_sloc,current_
 #            "title": "Thank you"
 #    }
         # newReport = Report.objects.create(report_title="on99")
-        newProject = Project.objects.create(project_title=project_title, 
-        project_description=project_description, 
-        project_sloc= project_sloc,
-        current_phase= current_phase,
-        current_iteration= current_iteration,
-        in_charge_by = request.user
+
+        phases = phase_names.split('\r\n')
+        iterations = iteration_names.split('\r\n')
+        newProject = Project.objects.create(
+            project_title=project_title, 
+            project_description=project_description, 
+            project_sloc= project_sloc,
+            current_phase= current_phase,
+            current_iteration= current_iteration,
+            in_charge_by = request.user,
+            num_phase = len(phases),
+            num_iteration = len(iterations)
         )
-        newReport = ReportHandler.add_project_report(newProject)
+        newReport = add_project_report(newProject)
         newProject.project_report = newReport
         newProject.save()
+        parr = []
+        iarr = []
+        c = 1
+        for p in phases:
+            parr.append(create_phase(p, newProject, c))
+            d = 1
+            for i in iterations:
+                iarr.append(create_iteration(i, parr[c-1], newProject, d))
+                d = d + 1
+            c = c + 1
+
         for member in assign_member:
             add_developer_to_project(member, newProject)
+
         
-        return newProject
+        Project.objects.filter(pk=newProject.pk).update(
+            current_phase=parr[0],
+            current_iteration=iarr[0]
+        )
+        newProject2 = Project.objects.get(pk=newProject.pk)
+        
+        return newProject2
 
 # @login_required
 # def editProject(request, pk):
